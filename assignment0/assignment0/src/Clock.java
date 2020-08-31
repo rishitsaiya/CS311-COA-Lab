@@ -1,4 +1,4 @@
-package assignment0;
+// package assignment0;
 
 public class Clock {
     private int currentTime;

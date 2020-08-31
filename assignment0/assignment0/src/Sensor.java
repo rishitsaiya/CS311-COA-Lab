@@ -1,4 +1,4 @@
-package assignment0;
+// package assignment0;
 
 public class Sensor {
     private boolean isTurnedOn;
@@ -21,7 +21,7 @@ public class Sensor {
      * @return: boolean representing if the Sensor is
      * active at the given time
      */
-    public bool isActive() {
+    public boolean isActive() {
         return this.isTurnedOn;
     }
 }

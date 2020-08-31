@@ -1,4 +1,4 @@
-package assignment0;
+// package assignment0;
 
 public class Infiltrator {
     private int currentX;
@@ -28,8 +28,10 @@ public class Infiltrator {
         if (this.hasReachedDefendingCountry())
             return;
 
+        this.border.updateSensorStates();
+
         // get details about all 8 neighbouring cells
-        bool neighbours[][] = new bool[3][3];
+        boolean neighbours[][] = new boolean[3][3];
         for (int i = -1; i < 2; i += 1) {
             for (int j = -1; j < 2; j += 1) {
                 neighbours[i+1][j+1] = this.border.isActive(currentX + i, currentY + j);
@@ -43,7 +45,7 @@ public class Infiltrator {
             for (int j = 1; j >= -1; j -= 1) {
                 if (i == j)
                     continue;
-                if (neighbours[i][j] == false) {
+                if (neighbours[i+1][j+1] == false) {
                     this.currentX += i;
                     this.currentY += j;
                     i = -2; j = -1;
@@ -52,7 +54,7 @@ public class Infiltrator {
         }
 
         // check if it has reached the Defending Country
-        this.reachedDefendingCountry = this.border.belongsToDefendingCountry(currentX, currentY);
+        this.reachedDefendingCountry |= this.border.belongsToDefendingCountry(currentX, currentY);
     }
 
     public String getCoordinates() {

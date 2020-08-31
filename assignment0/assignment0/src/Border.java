@@ -1,4 +1,4 @@
-package assignment0;
+// package assignment0;
 
 public class Border {
     private int length;
@@ -11,13 +11,18 @@ public class Border {
         this.breadth = borderBreadth;
         this.probabilityOfHeads = probabilityOfHeads;
         this.cells = new Sensor[this.length][this.breadth];
+
+        for (int i = 0; i < this.breadth; i += 1) {
+            for (int j = 0; j < this.length; j += 1)
+                this.cells[i][j] = new Sensor(this.probabilityOfHeads);
+        }
     }
 
     /**
      * updates all the Sensort (flips them or keeps them as it is 
      * using the biased coin probability provided)
      */
-    private void updateSensorStates() {
+    public void updateSensorStates() {
         for (int i = 0; i < this.breadth; i += 1) {
             for (int j = 0; j < this.length; j += 1)
                 this.cells[i][j].restart();
@@ -31,7 +36,7 @@ public class Border {
      * @return: Boolean denoting if cell represented by x, y is active
      */
 
-    public bool isActive(int x, int y) {
+    public boolean isActive(int x, int y) {
         // we will try to stop Infiltrator from going back to attacking country
         // by assuming each area in attacking country is equivalent to a cell
         // turned on
@@ -54,6 +59,6 @@ public class Border {
      * to the defending country
      */
     public boolean belongsToDefendingCountry(int x, int y) {
-        return x >= this.breadth && y >= this.length;
+        return x >= this.breadth;
     }
 }

@@ -1,4 +1,4 @@
-package assignment0;
+// package assignment0;
 import java.lang.Math;
 
 // a biased coin whose biasness can be provided from constructor
