@@ -10,8 +10,9 @@ public class Border {
         this.length = borderLength;
         this.breadth = borderBreadth;
         this.probabilityOfHeads = probabilityOfHeads;
-        this.cells = new Sensor[this.length][this.breadth];
+        this.cells = new Sensor[this.breadth][this.length];
 
+        // initialize each cell
         for (int i = 0; i < this.breadth; i += 1) {
             for (int j = 0; j < this.length; j += 1)
                 this.cells[i][j] = new Sensor(this.probabilityOfHeads);
@@ -60,5 +61,20 @@ public class Border {
      */
     public boolean belongsToDefendingCountry(int x, int y) {
         return x >= this.breadth;
+    }
+
+    /**
+     * Method that represents string representation of the object
+     */
+    public String toString() {
+        String res = new String();
+
+        for (int i = 0; i < this.breadth; i += 1) {
+            for (int j = 0; j < this.length; j += 1)
+                res += this.cells[i][j].toString() + " ";
+            res += '\n';
+        }
+
+        return res;
     }
 }

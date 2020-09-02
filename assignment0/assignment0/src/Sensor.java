@@ -24,4 +24,11 @@ public class Sensor {
     public boolean isActive() {
         return this.isTurnedOn;
     }
+
+    /**
+     * Method that represents string representation of the object
+     */
+    public String toString() {
+        return String.valueOf(this.isTurnedOn);
+    }
 }

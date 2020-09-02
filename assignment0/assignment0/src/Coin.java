@@ -9,7 +9,7 @@ public class Coin {
 	Coin(final double probabilityOfHeads) {
 		// check for probability values
 		assert probabilityOfHeads > 0 && probabilityOfHeads < 1: "Probability Out Of Bounds";
-		this.probabilityOfHeads = 1.0 / probabilityOfHeads;
+		this.probabilityOfHeads = probabilityOfHeads;
 	}
 
 	/*

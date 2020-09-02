@@ -39,19 +39,14 @@ public class Infiltrator {
         }
 
         // make a move and update currentX, currentY
-        // to be updated, till then throws error
-        // implementing a simple foolish move
-        for (int i = 1; i >= -1; i -= 1) {
-            for (int j = 1; j >= -1; j -= 1) {
-                if (i == j)
-                    continue;
-                if (neighbours[i+1][j+1] == false) {
-                    this.currentX += i;
-                    this.currentY += j;
-                    i = -2; j = -1;
-                }
+        // Inflator either moves towards Defending country or stays at its place
+        for (int j = 1, i = 1; j >= -1; j -= 1) {
+            if (neighbours[i+1][j+1] == false) {
+                this.currentX += i;
+                this.currentY += j;
+                break;
             }
-        }
+        } 
 
         // check if it has reached the Defending Country
         this.reachedDefendingCountry |= this.border.belongsToDefendingCountry(currentX, currentY);
@@ -59,5 +54,12 @@ public class Infiltrator {
 
     public String getCoordinates() {
         return String.valueOf(this.currentX) + "," + String.valueOf(this.currentY);
+    }
+
+    /**
+     * Method that represents string representation of the object
+     */
+    public String toString() {
+        return "Infiltrator at position: (" + this.getCoordinates() + ")";
     }
 }
