@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +69,7 @@ public class Main {
         Scanner input;
         try {
             input = new Scanner(new File(inputFileName));
+            PrintWriter writer = new PrintWriter(outputFileName);
             
             // read data about probabilities and border width from the file
             ArrayList<Double> probabilities = Stream.of(input.nextLine().split(" ")).map(i -> Double.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
@@ -79,8 +81,10 @@ public class Main {
             // time taken by the Infiltrator
             for (int i = 0; i < widths.size(); i += 1) {
                 timeTaken[i] = simulate(borderLength, widths.get(i), probabilities.get(i));
+                String data = String.valueOf(probabilities.get(i)) + ", " + String.valueOf(widths.get(i)) + ", " + String.valueOf(timeTaken[i]);
+                writer.println(data);
             }
-
+            writer.close();
             System.out.println(Arrays.toString(timeTaken));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
