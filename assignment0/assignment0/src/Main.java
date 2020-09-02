@@ -78,10 +78,9 @@ public class Main {
             ArrayList<Integer> widths = Stream.of(input.nextLine().split(" ")).map(i -> Integer.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
             double[] timeTaken = new double[widths.size()*probabilities.size()];
             int borderLength = 1000;
-            int k = 0;
             // Simulate the experiment for each inputs, and record the corresponding
             // time taken by the Infiltrator
-            for (int i = 0; i < probabilities.size(); i += 1) {
+            for (int i = 0, k = 0; i < probabilities.size(); i += 1) {
             	for (int j = 0; j < widths.size(); j += 1) {
 	                timeTaken[k] = simulate(borderLength, widths.get(j), probabilities.get(i));
 	                
