@@ -76,17 +76,20 @@ public class Main {
             // read data about probabilities and border width from the file
             ArrayList<Double> probabilities = Stream.of(input.nextLine().split(" ")).map(i -> Double.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
             ArrayList<Integer> widths = Stream.of(input.nextLine().split(" ")).map(i -> Integer.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
-            double[] timeTaken = new double[widths.size()];
+            double[] timeTaken = new double[widths.size()*probabilities.size()];
             int borderLength = 1000;
-
+            int k = 0;
             // Simulate the experiment for each inputs, and record the corresponding
             // time taken by the Infiltrator
-            for (int i = 0; i < widths.size(); i += 1) {
-                timeTaken[i] = simulate(borderLength, widths.get(i), probabilities.get(i));
-                
-                // Save prob, width and time in output file to plot graph
-                String data = String.valueOf(probabilities.get(i)) + ", " + String.valueOf(widths.get(i)) + ", " + String.valueOf(timeTaken[i]);
-                writer.println(data);
+            for (int i = 0; i < probabilities.size(); i += 1) {
+            	for (int j = 0; j < widths.size(); j += 1) {
+	                timeTaken[k] = simulate(borderLength, widths.get(j), probabilities.get(i));
+	                
+	                // Save prob, width and time in output file to plot graph
+	                String data = String.valueOf(probabilities.get(i)) + ", " + String.valueOf(widths.get(j)) + ", " + String.valueOf(timeTaken[k]);
+	                writer.println(data);
+	                k += 1;
+            	}
             }
             writer.close();
             System.out.println(Arrays.toString(timeTaken));
