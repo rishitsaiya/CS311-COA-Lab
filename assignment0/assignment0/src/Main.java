@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +70,9 @@ public class Main {
         try {
             input = new Scanner(new File(inputFileName));
             
+            // Write output to filename given by user
+            PrintWriter writer = new PrintWriter(outputFileName);
+            
             // read data about probabilities and border width from the file
             ArrayList<Double> probabilities = Stream.of(input.nextLine().split(" ")).map(i -> Double.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
             ArrayList<Integer> widths = Stream.of(input.nextLine().split(" ")).map(i -> Integer.valueOf(i)).collect(Collectors.toCollection(ArrayList:: new));
@@ -79,8 +83,12 @@ public class Main {
             // time taken by the Infiltrator
             for (int i = 0; i < widths.size(); i += 1) {
                 timeTaken[i] = simulate(borderLength, widths.get(i), probabilities.get(i));
+                
+                // Save prob, width and time in output file to plot graph
+                String data = String.valueOf(probabilities.get(i)) + ", " + String.valueOf(widths.get(i)) + ", " + String.valueOf(timeTaken[i]);
+                writer.println(data);
             }
-
+            writer.close();
             System.out.println(Arrays.toString(timeTaken));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
