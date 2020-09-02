@@ -69,6 +69,8 @@ public class Main {
         Scanner input;
         try {
             input = new Scanner(new File(inputFileName));
+            
+            // Write output to filename given by user
             PrintWriter writer = new PrintWriter(outputFileName);
             
             // read data about probabilities and border width from the file
@@ -81,6 +83,8 @@ public class Main {
             // time taken by the Infiltrator
             for (int i = 0; i < widths.size(); i += 1) {
                 timeTaken[i] = simulate(borderLength, widths.get(i), probabilities.get(i));
+                
+                // Save prob, width and time in output file to plot graph
                 String data = String.valueOf(probabilities.get(i)) + ", " + String.valueOf(widths.get(i)) + ", " + String.valueOf(timeTaken[i]);
                 writer.println(data);
             }
