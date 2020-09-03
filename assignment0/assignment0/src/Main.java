@@ -37,7 +37,7 @@ public class Main {
     public static double simulate(int borderLength, int borderWidth, double probabilityOfHeads) {
         // repeat the experiment with same parameters 'numOfIteration' times and take
         // average
-        int numOfIterations = 5;
+        int numOfIterations = 50;
         int[] timeTaken = new int[numOfIterations];
 
         for (int i = 0; i < numOfIterations; i += 1) {
