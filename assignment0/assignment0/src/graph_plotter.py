@@ -21,4 +21,4 @@ fig = plt.figure()
 graph = fig.add_subplot(111, projection='3d', xlabel='Probability', ylabel='Width', zlabel='Time (s)')
 graph.plot(xs=probabilities, ys=widths, zs=timeTaken)
 
-plt.show()
+plt.savefig('graph.png')
