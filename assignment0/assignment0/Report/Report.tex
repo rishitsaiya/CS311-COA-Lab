@@ -33,11 +33,11 @@ In accordance with the description of the challenge, the length has to be infini
 From the challenge description, the sensor is switched \textbf{ON}, if we receive \textbf{Heads} in the coin toss, which in turn depends upon the array/spectrum of probabilities we are considering.
 The following Set $P$ represents the set containing the probabilities of sensors being ON we have considered:
 \begin{equation*}
-    P = \{0.2, 0.3, 0.4, 0.5, 0.6\}
+    P = \{0.2, 0.3, 0.4, 0.5, 0.6, 0.8\}
 \end{equation*}
 WLOG, the time taken by the infiltrator to reach DC from AC will increase if width is increased. The following Set $W$ represents the set of width we considered for pairing with $P's$ elements to understand and comprehend on different time results.
 \begin{equation*}
-    W = \{7, 4, 5, 6, 7\}
+    W = \{4, 6, 10, 12, 16, 20, 24, 30\}
 \end{equation*}
 The infiltrator only moves ahead from AC to DC and no step backwards it taken. With a time span of every 10 secs, a coin is tossed and based on that upcoming step from the neighbouring 8 is chosen.
 
@@ -52,11 +52,11 @@ The infiltrator only moves ahead from AC to DC and no step backwards it taken. W
     As the probability of sensors being ON increased, the time taken by the infiltrator to cross also increases. The reason behind that is that, as the probability of sensors being ON increases, the infiltrator's options to proceed towards DC diminishes and hence time required will increase.
 \end{itemize}
 
-Given the above 2 statements are taken under consideration, our algorithms and optimization are based on the same notion over developing it. The 3-D graph in Figure 1 depicts time variation over average width and average probabilities.
+Given the above 2 statements are taken under consideration, our algorithms and optimization are based on the same notion over developing it. The 3-D graph in Figure 1 depicts average time variation over width and probabilities.
 %---------------------------------------------------------------------
 
 \section{Approach \& Code}
-For the above given sets of $P$ \& $W$, we tried all cross combinations i.e. for a given $W$, we tried all $P's$ with it and found out all different times. However to normalize the time taken for a given pair of (P,W), we just took average of all times.
+For the above given sets of $P$ \& $W$, we tried all cross combinations i.e. for a given $P$, we tried all $W's$ with it and found out all different times. However to normalize the time taken for a given pair of (P,W) for 50 iterations, we just took average of all times.
 
 %---------------------------------------------------------------------
 
@@ -71,17 +71,38 @@ A clean and readable code formation system is used. We have created 5 main files
         \item Sensor.java
     \end{itemize}
 
-Each file is embedded with a separate class which finally tops inherit to Main.java file. The command line executions are: \\
-$>>$ javac .* \\
-$>>$ java Main input.txt output.txt \\ 
+Each file is embedded with a separate class which finally top inherits to \textit{Main.java} file. The command line executions are: \\
+$>>$ \textit{javac .*} \\
+$>>$ \textit{java Main input.txt output.txt} \\ 
 
-It is to be noted that input.txt contains the sets $P$ \& $W$. The output.txt gives the time outputs.
+It is to be noted that \textbf{\textit{input.txt}} contains the sets $P$ \& $W$.
+\\
 
-Additionally, we have made a file called graph\_plotter.py for plotting graph using Matplotlib libraries in Python. Further explanation and deductions are given in below section.
+
+The \textbf{\textit{output.txt}} gives the following results: 
+
+
+($P_i$) ($W_i$) (Average time of 50 iterations of \{$P_i$,$W_i$\})
+\\
+
+Additionally, we have made a file called \textbf{\textit{graph\_plotter.py}} for plotting graph using Matplotlib libraries in Python. Further explanation and deductions are given in below section.
 %---------------------------------------------------------------------
 
 \section{Graph}
+Figure 1 shows the graph and where we have used the parameters as follows:
+\begin{itemize}
+    \item X-Axis: Width
+    \item Y-Axis: Probability
+    \item Z-Axis: Time
+\end{itemize}
 
-Some explanation from the graph goes here.
+The graph just depicts and proves the deductions which we made above.
+\begin{center}
+    \begin{figure}
+        \centering
+        \includegraphics[width=15cm, height=10cm]{graph.png}
+        \caption{Variation of Probability, Width and Average Time}
+    \end{figure}
+\end{center}
 
 \end{document}
