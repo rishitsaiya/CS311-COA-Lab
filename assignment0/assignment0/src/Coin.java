@@ -16,7 +16,7 @@ public class Coin {
 	* Return a boolean value if the biased coin lands up in heads
 	*/
 	public boolean toss() {
-		return (boolean)(Math.random() > this.probabilityOfHeads);
+		return (boolean)(Math.random() < this.probabilityOfHeads);
 	}
 
 }
