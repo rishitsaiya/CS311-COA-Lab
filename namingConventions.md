@@ -35,10 +35,10 @@
 7. Proper spacing: <br>
     notice the difference. Proper spacing between the `( )` blocks and also between operators, e.g `+`, `=`, ` * `
     ```java
-    for (int i = 0; i < n; i += 1) {
+    for (int i = 0; i < n; i += 1) {    // good
     ```
     ```java
-    for(int i=0;i<n;i+=1){
+    for(int i=0;i<n;i+=1){    // bad
     ```
 8. Tab over spaces: <br>
     Indent using tab of size 4.
@@ -46,8 +46,8 @@
     "Code should be self-documenting, that is, your naming should make it obvious what something does". exmaple:
     ```java
     public boolean shouldConsiderAbbreviating(List<String> someNames) {
-      for (String eachName : someNames) {
-        if (isTooLong(eachName)) {
+      for (String eachName : someNames) {    // notice how proper naming improves readability
+        if (isTooLong(eachName)) {      // notice how to check if name is too long, we have used a function to improve readablity
           return true;
         }
       }
