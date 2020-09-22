@@ -15,6 +15,12 @@ public class Simulator {
 		ParsedProgram.printState();
 	}
 
+	private static String convert(Operand inst) {
+		// write logic for converting to binary/ hex
+		// check if inst is a label, in that case, use its value 
+		return String.valueOf(inst.getValue());
+	}
+
 	public static void assemble(String objectProgramFile) {
 		FileWriter file;
 		try {
@@ -31,6 +37,13 @@ public class Simulator {
 			//4. assemble one instruction at a time, and write to the file
 			for (var inst: ParsedProgram.code) {
 				// file.write(inst.toString());
+				/**
+				 * inst.getSourceOperand().getValue() will be passed to a function as f()
+				 * that will change decimal to binary and then will return the string
+				 * form of the binary. It will also check if the value is a label,
+				 * in case it is a label, it would call ParsedProgram.symtab.get()
+				 * to get the address corresponding to the label
+				 */
 				if (inst.getSourceOperand1() != null)
 					file.write(String.valueOf((inst.getSourceOperand1().getValue())));
 				if (inst.getSourceOperand2() != null)
