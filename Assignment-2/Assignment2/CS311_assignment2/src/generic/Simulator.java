@@ -7,21 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.graalvm.compiler.asm.aarch64.AArch64Assembler.Instruction;
-
-// import org.graalvm.compiler.asm.aarch64.AArch64Assembler.Instruction;
-
 
 public class Simulator {
 
 	static FileInputStream inputcodeStream = null;
-	public static Map<Instruction.OperationType, String> mapping = new HashMap<>();
-
-	public Simulator() {
-		mapping.put(Instruction.OperationType.add, "00000");
-		mapping.put(Instruction.OperationType.addi, "00001");
-
-	}
+	public static Map<Instruction.OperationType, String> mapping = new HashMap<>() {{
+		put(Instruction.OperationType.add, "00000");
+		put(Instruction.OperationType.addi, "00001");
+		put(Instruction.OperationType.load, "10110");
+		put(Instruction.OperationType.end, "11101");
+	}};
 
 	public static void setupSimulation(String assemblyProgramFile) {
 		int firstCodeAddress = ParsedProgram.parseDataSection(assemblyProgramFile);
@@ -71,7 +66,6 @@ public class Simulator {
 
 			//4. assemble one instruction at a time, and write to the file
 			for (var inst: ParsedProgram.code) {
-				// file.write(inst.toString());
 				/**
 				 * inst.getSourceOperand().getValue() will be passed to a function as f()
 				 * that will change decimal to binary and then will return the string
@@ -80,6 +74,9 @@ public class Simulator {
 				 * to get the address corresponding to the label
 				 */
 				// print operation type, use toBinaryString() instead of convert()
+				file.write(mapping.get(inst.getOperationType()));
+				// System.out.println(inst.getOperationType() + " " + mapping.get(inst.getOperationType()));
+				// System.out.println(mapping);
 
 				if (inst.getSourceOperand1() != null)
 					file.write(convert(inst.getSourceOperand1()));
