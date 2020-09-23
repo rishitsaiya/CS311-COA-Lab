@@ -14,6 +14,26 @@ public class Simulator {
 	public static Map<Instruction.OperationType, String> mapping = new HashMap<>() {{
 		put(Instruction.OperationType.add, "00000");
 		put(Instruction.OperationType.addi, "00001");
+		put(Instruction.OperationType.sub, "00010");
+		put(Instruction.OperationType.subi, "00011");
+		put(Instruction.OperationType.mul, "00100");
+		put(Instruction.OperationType.muli, "00101");
+		put(Instruction.OperationType.div, "00110");
+		put(Instruction.OperationType.divi, "00111");
+		put(Instruction.OperationType.and, "01000");
+		put(Instruction.OperationType.andi, "01001");
+		put(Instruction.OperationType.or, "01010");
+		put(Instruction.OperationType.ori, "01011");
+		put(Instruction.OperationType.xor, "01100");
+		put(Instruction.OperationType.xori, "01101");
+		put(Instruction.OperationType.slt, "01110");
+		put(Instruction.OperationType.slti, "01111");
+		put(Instruction.OperationType.sll, "10000");
+		put(Instruction.OperationType.slli, "10001");
+		put(Instruction.OperationType.srl, "10010");
+		put(Instruction.OperationType.srli, "10011");
+		put(Instruction.OperationType.sra, "10100");
+		put(Instruction.OperationType.srai, "10101");
 		put(Instruction.OperationType.load, "10110");
 		put(Instruction.OperationType.end, "11101");
 	}};
