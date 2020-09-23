@@ -3,6 +3,7 @@ package generic;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -36,6 +37,11 @@ public class Simulator {
 		put(Instruction.OperationType.srai, "10101");
 		put(Instruction.OperationType.load, "10110");
 		put(Instruction.OperationType.end, "11101");
+		put(Instruction.OperationType.beq, "11001");
+		put(Instruction.OperationType.jmp, "11000");
+		put(Instruction.OperationType.bne, "11010");
+		put(Instruction.OperationType.blt, "11011");
+		put(Instruction.OperationType.bgt, "11100");
 	}};
 
 	public static void setupSimulation(String assemblyProgramFile) {
@@ -44,9 +50,22 @@ public class Simulator {
 		ParsedProgram.printState();
 	}
 
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
 	private static String toBinaryString(int n) {
 		// Remove this conditional statement
-		if (n >= 0) return String.valueOf(n);
+		// if (n >= 0) return String.valueOf(n);
 
 		Stack<Integer> bits = new Stack<>();
 		do {
@@ -58,15 +77,18 @@ public class Simulator {
 		while (!bits.isEmpty()) {
 			builder.append(bits.pop());
 		}
-		return builder.toString();
+		return " " + builder.toString();
 	}
 
 	private static String convert(Operand inst) {
+		if (inst == null)
+			return toBinaryOfSpecificPrecision(0, 5);
+
 		if (inst.getOperandType() == Operand.OperandType.Label)
-			return toBinaryString(ParsedProgram.symtab.get(inst.getLabelValue()));
+			return toBinaryOfSpecificPrecision(ParsedProgram.symtab.get(inst.getLabelValue()), 5);
 
 		// write logic for converting to binary/ hex
-		return toBinaryString(inst.getValue());
+		return toBinaryOfSpecificPrecision(inst.getValue(), 5);
 		// check if inst is a label, in that case, use its value 
 		// return String.valueOf(inst.getValue());
 	}
@@ -78,11 +100,11 @@ public class Simulator {
 			file = new FileWriter(objectProgramFile);
 
 			//2. write the firstCodeAddress to the file
-			file.write(String.valueOf(ParsedProgram.firstCodeAddress));
+			file.write(ParsedProgram.firstCodeAddress);
 
 			//3. write the data to the file
 			for (var value: ParsedProgram.data)
-				file.write(String.valueOf(value));
+				file.write(value);
 
 			//4. assemble one instruction at a time, and write to the file
 			for (var inst: ParsedProgram.code) {
@@ -93,18 +115,27 @@ public class Simulator {
 				 * in case it is a label, it would call ParsedProgram.symtab.get()
 				 * to get the address corresponding to the label
 				 */
+				String binaryRep = "";
+
 				// print operation type, use toBinaryString() instead of convert()
-				file.write(mapping.get(inst.getOperationType()));
+				// file.write(mapping.get(inst.getOperationType()));
+				binaryRep += mapping.get(inst.getOperationType());
 				// System.out.println(inst.getOperationType() + " " + mapping.get(inst.getOperationType()));
 				// System.out.println(mapping);
 
-				if (inst.getSourceOperand1() != null)
-					file.write(convert(inst.getSourceOperand1()));
-				if (inst.getSourceOperand2() != null)
-					file.write(convert(inst.getSourceOperand2()));
-				if (inst.getDestinationOperand() != null)
-					file.write(convert(inst.getDestinationOperand()));
-				file.write(inst.toString());
+				binaryRep += convert(inst.getSourceOperand1());
+				binaryRep += convert(inst.getSourceOperand2());
+				binaryRep += convert(inst.getDestinationOperand());
+
+				file.write(toSignedInteger(binaryRep));
+				System.out.println(binaryRep);
+				// if (inst.getSourceOperand1() != null)
+				// 	file.write(convert(inst.getSourceOperand1()));
+				// if (inst.getSourceOperand2() != null)
+				// 	file.write(convert(inst.getSourceOperand2()));
+				// if (inst.getDestinationOperand() != null)
+				// 	file.write(convert(inst.getDestinationOperand()));
+				// file.write(inst.toString());
 			}
 
 			//5. close the file
