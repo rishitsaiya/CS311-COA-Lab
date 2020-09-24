@@ -1,6 +1,9 @@
 package generic;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.nio.ByteBuffer;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -49,14 +52,6 @@ public class Simulator {
 		ParsedProgram.parseCodeSection(assemblyProgramFile, firstCodeAddress);
 		ParsedProgram.printState();
 	}
-
-	private static int toSignedInteger(String binary) {
-		int n = 32 - binary.length();
-        char[] sign_ext = new char[n];
-        Arrays.fill(sign_ext, binary.charAt(0));
-        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
-        return signedInteger;
-	}
 	
 	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
 		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
@@ -94,17 +89,21 @@ public class Simulator {
 	}
 
 	public static void assemble(String objectProgramFile) {
-		FileWriter file;
+		FileOutputStream file;
 		try {
 			//1. open the objectProgramFile in binary mode
-			file = new FileWriter(objectProgramFile);
+			file = new FileOutputStream(objectProgramFile);
+			BufferedOutputStream bfile = new BufferedOutputStream(file);
 
 			//2. write the firstCodeAddress to the file
-			file.write(ParsedProgram.firstCodeAddress);
+			byte[] addressCode = ByteBuffer.allocate(4).putInt(ParsedProgram.firstCodeAddress).array();
+			bfile.write(addressCode);
 
 			//3. write the data to the file
-			for (var value: ParsedProgram.data)
-				file.write(value);
+			for (var value: ParsedProgram.data) {
+				byte[] dataValue = ByteBuffer.allocate(4).putInt(value).array();
+				bfile.write(dataValue);
+			}
 
 			//4. assemble one instruction at a time, and write to the file
 			for (var inst: ParsedProgram.code) {
@@ -120,15 +119,41 @@ public class Simulator {
 				// print operation type, use toBinaryString() instead of convert()
 				// file.write(mapping.get(inst.getOperationType()));
 				binaryRep += mapping.get(inst.getOperationType());
+				int opCode = Integer.parseInt(binaryRep, 2);
+				System.out.println(opCode);
 				// System.out.println(inst.getOperationType() + " " + mapping.get(inst.getOperationType()));
 				// System.out.println(mapping);
+				
+				if (opCode <= 20 && opCode % 2 == 0) {
+					// R3 Type
+					binaryRep += convert(inst.getSourceOperand1());
+					binaryRep += convert(inst.getSourceOperand2());
+					binaryRep += convert(inst.getDestinationOperand());
+					binaryRep += toBinaryOfSpecificPrecision(0, 12);
+				}
+				else if (opCode == 24 || opCode == 29) {
+					// RI Type
+					binaryRep += String.format("%027d", Integer.valueOf(convert(inst.getDestinationOperand())));
+				}
+				else {
+					// R2I Type
+					if (opCode >= 25 && opCode <= 28) {
+						binaryRep += convert(inst.getSourceOperand1());
+						binaryRep += convert(inst.getSourceOperand2());
+						binaryRep += String.format("%017d", Integer.valueOf(convert(inst.getDestinationOperand())));
+					}
+					else {						
+						binaryRep += convert(inst.getSourceOperand1());
+						binaryRep += convert(inst.getDestinationOperand());
+						binaryRep += String.format("%017d", Integer.valueOf(convert(inst.getSourceOperand2())));
+					}
+				}
+				
+				int instInteger = (int) Long.parseLong(binaryRep, 2);
+				byte[] instBinary = ByteBuffer.allocate(4).putInt(instInteger).array();
+				bfile.write(instBinary);
 
-				binaryRep += convert(inst.getSourceOperand1());
-				binaryRep += convert(inst.getSourceOperand2());
-				binaryRep += convert(inst.getDestinationOperand());
-
-				file.write(toSignedInteger(binaryRep));
-				System.out.println(binaryRep);
+				System.out.println(instInteger);
 				// if (inst.getSourceOperand1() != null)
 				// 	file.write(convert(inst.getSourceOperand1()));
 				// if (inst.getSourceOperand2() != null)
@@ -139,7 +164,7 @@ public class Simulator {
 			}
 
 			//5. close the file
-			file.close();
+			bfile.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
