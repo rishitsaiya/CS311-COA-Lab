@@ -141,10 +141,16 @@ public class Simulator {
 				}
 				else if (opCode == 24) {
 					// RI Type
-					binaryRep += toBinaryOfSpecificPrecision(0, 5);
-					int value = Integer.parseInt(convert(inst.getDestinationOperand(), 5), 2) - pc;
-					String bin = toBinaryOfSpecificPrecision(value, 22);
-					binaryRep += bin.substring(bin.length() - 22);
+					if (inst.destinationOperand.getOperandType() == Operand.OperandType.Register) {
+						binaryRep += convert(inst.getDestinationOperand(), 5);
+						binaryRep += toBinaryOfSpecificPrecision(0, 22);
+					}
+					else {						
+						binaryRep += toBinaryOfSpecificPrecision(0, 5);
+						int value = Integer.parseInt(convert(inst.getDestinationOperand(), 5), 2) - pc;
+						String bin = toBinaryOfSpecificPrecision(value, 22);
+						binaryRep += bin.substring(bin.length() - 22);
+					}
 				}
 				else if (opCode == 29) {
 					binaryRep += toBinaryOfSpecificPrecision(0, 27);
