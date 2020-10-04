@@ -87,6 +87,11 @@ public class OperandFetch {
         int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
         return signedInteger;
 	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
+	}
 	
 	public void performOF() {
 		
@@ -109,6 +114,8 @@ public class OperandFetch {
 			String opcode = instruction.substring(0, 5);
 			int type_operation = Integer.parseInt(opcode, 2);
 			OperationType operation = operationType[type_operation];
+
+			loopAround(20);
 
 			Instruction inst = new Instruction();
 			switch(operation) {

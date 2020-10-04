@@ -39,12 +39,22 @@ public class Execute {
 		return binary;
 	}
 	
+	/**
+	 * converts binary representation of number to signed integer
+	 * @param binary: Sring representation of binary form of number
+	 * @return: returns signed representation of given number
+	*/
 	private static int toSignedInteger(String binary) {
 		int n = 32 - binary.length();
         char[] sign_ext = new char[n];
         Arrays.fill(sign_ext, binary.charAt(0));
         int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
         return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
 	}
 	
 	public static String twosComplement(String bin) {
@@ -89,6 +99,8 @@ public class Execute {
 			String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
 
 			int alu_result = 0;
+
+			loopAround(30);
 
 			if(opcode % 2 == 0 && opcode < 21 && opcode >= 0) {
 
