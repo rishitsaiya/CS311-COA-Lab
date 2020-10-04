@@ -15,22 +15,21 @@ public class Simulator {
 	static Processor processor;
 	static boolean simulationComplete;
 	
-	public static void setupSimulation(String assemblyProgramFile, Processor p)
-	{
+	public static void setupSimulation(String assemblyProgramFile, Processor p) {
+
 		Simulator.processor = p;
-		try
-		{
+		try {
+
 			loadProgram(assemblyProgramFile);
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
+
 			e.printStackTrace();
 		}
 		
 		simulationComplete = false;
 	}
 	
-	static void loadProgram(String assemblyProgramFile) throws IOException
-	{
+	static void loadProgram(String assemblyProgramFile) throws IOException {
 		/*
 		 * TODO
 		 * 1. load the program into memory according to the program layout described
@@ -42,44 +41,40 @@ public class Simulator {
 		 *     x2 = 65535
 		 */
 		InputStream is = null;
-		try
-		{
+		try {
+
 			is = new FileInputStream(assemblyProgramFile);
 		}
-		catch (FileNotFoundException e)
-		{
+		catch (FileNotFoundException e) {
+
 			e.printStackTrace();
 		}
 		DataInputStream dis = new DataInputStream(is);
 
 		int address = -1;
-		while(dis.available() > 0)
-		{
+		int add_offset = 1;
+		while(dis.available() > 0) {
+
 			int next = dis.readInt();
 			if(address == -1)
-			{
 				processor.getRegisterFile().setProgramCounter(next);
-			}
 			else
-			{
 				processor.getMainMemory().setWord(address, next);
-			}
-			address += 1;
+
+			address += add_offset;
 		}
-        
+		
+		int CONST = 65535;
+		
         processor.getRegisterFile().setValue(0, 0);
-        processor.getRegisterFile().setValue(1, 65535);
-        processor.getRegisterFile().setValue(2, 65535);
-        
-        //System.out.println(processor.getRegisterFile().getProgramCounter());
-        //String output = processor.getMainMemory().getContentsAsString(0, 15);
-        //System.out.println(output);
+        processor.getRegisterFile().setValue(1, CONST);
+        processor.getRegisterFile().setValue(2, CONST);
 	}
-			
-	public static void simulate()
-	{
-		while(simulationComplete == false)
-		{
+
+	public static void simulate() {
+
+		while(simulationComplete == false) {
+
 			processor.getIFUnit().performIF();
 			Clock.incrementClock();
 			processor.getOFUnit().performOF();
@@ -94,13 +89,10 @@ public class Simulator {
 			Statistics.setNumberOfInstructions(Statistics.getNumberOfInstructions() + 1);
 			Statistics.setNumberOfCycles(Statistics.getNumberOfCycles() + 1);
 		}
-		
-		// TODO
-		// set statistics
 	}
 	
-	public static void setSimulationComplete(boolean value)
-	{
+	public static void setSimulationComplete(boolean value) {
+
 		simulationComplete = value;
 	}
 }

@@ -78,6 +78,8 @@ public class OperandFetch {
 		
 			OperationType[] operationType = OperationType.values();
 			String instruction = Integer.toBinaryString(IF_OF_Latch.getInstruction());
+
+			var numBits = 32;
 			
 			// padding to make it 32 bit
 			while(instruction.length() != 32) 

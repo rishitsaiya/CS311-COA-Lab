@@ -9,10 +9,8 @@ public class Statistics {
 	static int numberOfCycles;
 	
 
-	public static void printStatistics(String statFile)
-	{
-		try
-		{
+	public static void printStatistics(String statFile) {
+		try {
 			PrintWriter writer = new PrintWriter(statFile);
 			
 			writer.println("Number of instructions executed = " + numberOfInstructions);

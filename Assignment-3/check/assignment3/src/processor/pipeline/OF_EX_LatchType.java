@@ -12,6 +12,17 @@ public class OF_EX_LatchType {
 		EX_enable = false;
 	}
 
+	public OF_EX_LatchType(boolean eX_enable) {
+
+		EX_enable = eX_enable;
+	}
+
+	public OF_EX_LatchType(boolean eX_enable, Instruction instruction) {
+
+		EX_enable = eX_enable;
+		this.instruction = instruction;
+	}
+
 	public boolean isEX_enable() {
 		
 		return EX_enable;

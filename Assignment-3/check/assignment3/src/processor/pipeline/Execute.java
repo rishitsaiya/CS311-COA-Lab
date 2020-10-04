@@ -22,6 +22,45 @@ public class Execute {
 		this.EX_IF_Latch = eX_IF_Latch;
 	}
 	
+	public static char flip(char c) {
+		
+        return (c == '0') ? '1' : '0';
+	}
+	
+	/**
+	 * Computes two's complement of given number in binary form
+	 * Source: Stackoverflow
+	 * @param bin: String representation of binary form of number
+	 * @return: returns binary form of two's complement of given number
+	 */
+	public static String twosComplement(String bin) {
+		
+        String twos = "", ones = "";
+        for (int i = 0; i < bin.length(); i++) 
+            ones += flip(bin.charAt(i));
+
+        StringBuilder builder = new StringBuilder(ones);
+        boolean addExtra = false;
+		
+        for (int i = ones.length() - 1; i > 0; i--) {
+		
+            if (ones.charAt(i) == '1') 
+                builder.setCharAt(i, '0');
+            else {
+		
+                builder.setCharAt(i, '1');
+                addExtra = true;
+                break;
+            }
+        }
+		
+        if (addExtra == false) 
+            builder.append("1", 0, 7);
+		
+        twos = builder.toString();
+        return twos;
+    }
+
 	public void performEX() {
 
 		if(OF_EX_Latch.isEX_enable()) {
@@ -35,7 +74,7 @@ public class Execute {
 
 			int alu_result = 0;
 
-			if(opcode % 2 == 0 && opcode < 21) {
+			if(opcode % 2 == 0 && opcode < 21 && opcode >= 0) {
 
 				int op1 = containingProcessor.getRegisterFile().getValue(
 					instruction.getSourceOperand1().getValue());
@@ -45,29 +84,29 @@ public class Execute {
 				switch(op_type) {
 
 					case add:
-						alu_result = op1 + op2;
+						alu_result = (op1 + op2);
 						break;
 					case mul:
-						alu_result = op1 * op2;
+						alu_result = (op1 * op2);
 						break;
 					case sub:
-						alu_result = op1 - op2;
+						alu_result = (op1 - op2);
 						break;
 					case load:
 						break;
 					case and:
-						alu_result = op1 & op2;
+						alu_result = (op1 & op2);
 						break;
 					case div:
-						alu_result = op1 / op2;
-						int remainder = op1 % op2;
+						alu_result = (op1 / op2);
+						int remainder = (op1 % op2);
 						containingProcessor.getRegisterFile().setValue(31, remainder);
 						break;
 					case xor:
-						alu_result = op1 ^ op2;
+						alu_result = (op1 ^ op2);
 						break;
 					case or:
-						alu_result = op1 | op2;
+						alu_result = (op1 | op2);
 						break;
 					case store:
 						break;						
@@ -80,13 +119,13 @@ public class Execute {
 					case srli:
 						break;
 					case srl:
-						alu_result = op1 >>> op2;
+						alu_result = (op1 >>> op2);
 						break;
 					case sll:
-						alu_result = op1 << op2;
+						alu_result = (op1 << op2);
 						break;
 					case sra:
-						alu_result = op1 >> op2;
+						alu_result = (op1 >> op2);
 						break;
 					case end:
 						break;
@@ -164,15 +203,12 @@ public class Execute {
 
 				OperandType optype = instruction.getDestinationOperand().getOperandType();
 				int imm = 0;
-				if (optype == OperandType.Register) {
-
+				if (optype == OperandType.Register) 
 					imm = containingProcessor.getRegisterFile().getValue(
 						instruction.getDestinationOperand().getValue());
-				}
-				else {
-
+				else 
 					imm = instruction.getDestinationOperand().getValue();
-				}
+
 				alu_result = imm + currentPC;
 				EX_IF_Latch.setIS_enable(true, alu_result);
 			}
