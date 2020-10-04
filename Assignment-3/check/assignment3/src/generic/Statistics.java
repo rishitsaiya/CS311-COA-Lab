@@ -11,12 +11,12 @@ public class Statistics {
 
 	public static void printStatistics(String statFile) {
 		try {
+			// TODO add code here to print statistics in the output file
 			PrintWriter writer = new PrintWriter(statFile);
 			
-			writer.println("Number of instructions executed = " + numberOfInstructions);
-			writer.println("Number of cycles taken = " + numberOfCycles);
-			
-			// TODO add code here to print statistics in the output file
+			// Print statistics in the statFile
+			writer.print("Number of instructions executed = " + numberOfInstructions + "\n");
+			writer.print("Number of cycles taken = " + numberOfCycles + "\n");
 			
 			writer.close();
 		}
