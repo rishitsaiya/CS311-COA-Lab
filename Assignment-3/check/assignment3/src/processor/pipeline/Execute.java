@@ -33,6 +33,20 @@ public class Execute {
 	 * @param bin: String representation of binary form of number
 	 * @return: returns binary form of two's complement of given number
 	 */
+	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+	
 	public static String twosComplement(String bin) {
 		
         String twos = "", ones = "";
@@ -71,6 +85,8 @@ public class Execute {
 			OperationType op_type = instruction.getOperationType();
 			int opcode = Arrays.asList(OperationType.values()).indexOf(op_type);
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter() - 1;
+			int signedInt = toSignedInteger("001");
+			String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
 
 			int alu_result = 0;
 

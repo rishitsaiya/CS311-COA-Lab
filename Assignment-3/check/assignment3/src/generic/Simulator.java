@@ -56,10 +56,14 @@ public class Simulator {
 		while(dis.available() > 0) {
 
 			int next = dis.readInt();
-			if(address == -1)
-				processor.getRegisterFile().setProgramCounter(next);
-			else
-				processor.getMainMemory().setWord(address, next);
+			switch(address) {
+				case -1:
+					processor.getRegisterFile().setProgramCounter(next);
+					break;
+				default:
+					processor.getMainMemory().setWord(address, next);
+					break;
+			}
 
 			address += add_offset;
 		}

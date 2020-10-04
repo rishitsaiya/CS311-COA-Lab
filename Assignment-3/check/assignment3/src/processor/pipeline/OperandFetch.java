@@ -1,6 +1,9 @@
 package processor.pipeline;
 
 import processor.Processor;
+
+import java.util.Arrays;
+
 import generic.Instruction;
 import generic.Instruction.OperationType;
 import generic.Operand;
@@ -72,6 +75,19 @@ public class OperandFetch {
         return twos;
     }
 	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+	
 	public void performOF() {
 		
 		if(IF_OF_Latch.isOF_enable()) {
@@ -79,7 +95,11 @@ public class OperandFetch {
 			OperationType[] operationType = OperationType.values();
 			String instruction = Integer.toBinaryString(IF_OF_Latch.getInstruction());
 
-			var numBits = 32;
+			int numBits = 32;
+			int signedInt = toSignedInteger("001");
+			String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
+			binaryNum = toBinaryOfSpecificPrecision(numBits, 5);
+			signedInt = toSignedInteger(binaryNum);
 			
 			// padding to make it 32 bit
 			while(instruction.length() != 32) 
