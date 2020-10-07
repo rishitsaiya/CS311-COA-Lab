@@ -1,0 +1,51 @@
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\Reset_Handler - 100% (2 of 2 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\NMI_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\HardFault_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\MemManage_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\BusFault_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\UsageFault_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\SVC_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\DebugMon_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\PendSV_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\SysTick_Handler - 0% (0 of 1 instructions executed)
+\\project\RTE/Device/LPC1768/startup_LPC17xx.s\Default_Handler - 0% (0 of 1 instructions executed)
+\\project\main.s\__asm_0x100 - 100% (20 of 20 instructions executed)
+Time spent in code without debug info - Time:  217.500 탎 (97%)
+Functions sorted by execution time consumption:
+  '__asm_0x100' - Time:    5.250 탎 (2%), Calls: 1
+  'Reset_Handler' - Time:    0.417 탎 (0%), Calls: 1
+  'BusFault_Handler' - Time: 0 탎 (0%), Calls: 0
+  'SVC_Handler' - Time: 0 탎 (0%), Calls: 0
+  'PendSV_Handler' - Time: 0 탎 (0%), Calls: 0
+  'Default_Handler' - Time: 0 탎 (0%), Calls: 0
+  'SysTick_Handler' - Time: 0 탎 (0%), Calls: 0
+  'DebugMon_Handler' - Time: 0 탎 (0%), Calls: 0
+  'UsageFault_Handler' - Time: 0 탎 (0%), Calls: 0
+  'MemManage_Handler' - Time: 0 탎 (0%), Calls: 0
+  'HardFault_Handler' - Time: 0 탎 (0%), Calls: 0
+  'NMI_Handler' - Time: 0 탎 (0%), Calls: 0
+
+
+Execution times by Modules and Functions:
+App: 'project', Time:    5.667 탎 (3%)
+ Module: 'RTE/Device/LPC1768/startup_LPC17xx.s', Time:    0.417 탎 (0%)
+  Function: 'Reset_Handler', Time:    0.417 탎 (0%), Calls: 1
+  Function: 'NMI_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'HardFault_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'MemManage_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'BusFault_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'UsageFault_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'SVC_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'DebugMon_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'PendSV_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'SysTick_Handler', Time: 0 탎 (0%), Calls: 0
+  Function: 'Default_Handler', Time: 0 탎 (0%), Calls: 0
+ Module: 'RTE/Device/LPC1768/startup_LPC17xx.s', Time: 0 탎 (0%)
+ Module: 'main.s', Time:    5.250 탎 (2%)
+  Function: '__asm_0x100', Time:    5.250 탎 (2%), Calls: 1
+Event Recorder log file: <none>
+       command log file: mainlog
+        serial log file: <none>
+       Itm/Rta log file: <none>
+LOG >>  mainlog
+*** error 63: logfile already active
