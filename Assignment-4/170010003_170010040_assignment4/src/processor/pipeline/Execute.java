@@ -27,6 +27,29 @@ public class Execute {
 		this.IF_OF_Latch = iF_OF_Latch;
 		this.IF_EnableLatch = iF_EnableLatch;
 	}
+	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	/**
+	 * converts binary representation of number to signed integer
+	 * @param binary: Sring representation of binary form of number
+	 * @return: returns signed representation of given number
+	*/
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
+	}
 
 	public void performEX() {
 		if (OF_EX_Latch.getIsNOP()) {
@@ -40,6 +63,10 @@ public class Execute {
 			OperationType op_type = instruction.getOperationType();
 			int opcode = Arrays.asList(OperationType.values()).indexOf(op_type);
 			int currentPC = containingProcessor.getRegisterFile().getProgramCounter() - 1;
+			int signedInt = toSignedInteger("001");
+			String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
+
+			loopAround(30);
 
 			if (opcode == 24 || opcode == 25 || opcode == 26 || opcode == 27 || opcode == 28 || opcode == 29) {
 				Statistics.setNumberOfBranchTaken(Statistics.getNumberOfBranchTaken() + 2);

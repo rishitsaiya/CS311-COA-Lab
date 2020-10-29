@@ -88,6 +88,24 @@ public class OperandFetch {
 		IF_EnableLatch.setIF_enable(false);
 		OF_EX_Latch.setIsNOP(true);
 	}
+	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
+	}
  	
 	public void performOF() {
 		if (IF_OF_Latch.isOF_enable()) {
@@ -106,7 +124,11 @@ public class OperandFetch {
 				IF_EnableLatch.setIF_enable(false);
 			}
 			
-
+			int signedInt = toSignedInteger("001");
+			String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
+			binaryNum = toBinaryOfSpecificPrecision(numBits, 5);
+			signedInt = toSignedInteger(binaryNum);
+			loopAround(20);
 			
 			boolean conflict_inst = false;
 			Instruction instruction_ex_stage = OF_EX_Latch.getInstruction();
