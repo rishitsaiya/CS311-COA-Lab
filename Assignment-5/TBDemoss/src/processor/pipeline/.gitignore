@@ -1,0 +1,15 @@
+/ALU.class
+/EX_IF_LatchType.class
+/EX_MA_LatchType.class
+/Execute.class
+/IF_EnableLatchType.class
+/IF_OF_LatchType.class
+/InstructionFetch.class
+/MA_RW_LatchType.class
+/MemoryAccess.class
+/OF_EX_LatchType.class
+/OperandFetch.class
+/RegisterFile.class
+/RegisterWrite.class
+/co_unit.class
+/control_unit.class
