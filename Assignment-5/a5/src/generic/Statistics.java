@@ -10,7 +10,7 @@ public class Statistics {
 	static int numberOfCycles;
 	static int numberOfBranchTaken;
 	static int numberOfRegisterWriteInstructions;
-	static float CPI;
+	static float IPC;
 	
 
 	public static void printStatistics(String statFile)	{
@@ -20,7 +20,7 @@ public class Statistics {
 			
 			writer.println("Number of instructions executed: " + numberOfInstructions);
 			writer.println("Number of cycles taken: " + numberOfCycles);
-			writer.println("CPI: " + CPI);
+			writer.println("IPC: " + IPC);
 			
 			writer.close();
 		}
@@ -71,6 +71,6 @@ public class Statistics {
 	}
 	
 	public static void setCPI() {
-		Statistics.CPI = (float)numberOfCycles/(float)numberOfInstructions;
+		Statistics.IPC = (float)numberOfInstructions/(float)numberOfCycles;
 	}
 }
