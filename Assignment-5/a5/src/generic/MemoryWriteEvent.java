@@ -19,11 +19,6 @@ public class MemoryWriteEvent extends Event {
 		this.addressToWriteTo = addressToWriteTo;
 	}
 
-	public void setAddressAndValue(int addressToWriteTo, int value) {
-		this.addressToWriteTo = addressToWriteTo;
-		this.value = value;
-	}
-
 	public int getValue() {
 		return value;
 	}
@@ -31,8 +26,8 @@ public class MemoryWriteEvent extends Event {
 	public void setValue(int value) {
 		this.value = value;
 	}
-
+	
 	public String toString() {
-		return "MemoryWriteEvent: " + addressToWriteTo + " " + value;
+		return "Memory write event, get address and set address";
 	}
 }

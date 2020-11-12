@@ -2,24 +2,28 @@ package processor.pipeline;
 
 public class OF_EX_LatchType {
 	
-	boolean EX_enable,EX_busy;
-	int immx;
-	int branchtarget;
-	int operand1;
-	int operand2;
-	int rd;
-	int instruction;
-	public void setEX_busy(boolean eX_busy){
-		 EX_busy=eX_busy;
-	}
-	public boolean isEX_busy() {
-		return EX_busy;
-	}
-
+	boolean EX_enable;
+	String opcode;
+	int rs1,rs2,rd,imm;
+	int rs1addr,rs2addr;
+	int insPC;
+	boolean isNop;
+	boolean isBusy;
+	boolean NOP;
 	
 	public OF_EX_LatchType()
 	{
 		EX_enable = false;
+		opcode = "70000";
+		rs1 = 70000;
+		rs2 = 70000;
+		rd = 70000;
+		imm = 70000;
+		insPC = -1;
+		isNop = false;
+		rs1addr = 45;
+		rs2addr = 45;
+		isBusy = false;
 	}
 
 	public boolean isEX_enable() {
@@ -29,50 +33,12 @@ public class OF_EX_LatchType {
 	public void setEX_enable(boolean eX_enable) {
 		EX_enable = eX_enable;
 	}
-
-	public void setimmx(int imm) {
-		this.immx = imm;
+	
+	public boolean getIsNOP() {
+		return NOP;
 	}
 	
-	public int getimmx() {
-		return immx;
-	}
-	
-	public void setbranchtarget(int bt) {
-		this.branchtarget = bt;
-	}
-	
-	public int getbranchtarget() {
-		return branchtarget;
-	}
-	
-	public void setoperand1(int op1) {
-		this.operand1 = op1;
-	}
-	public void setrd(int r) {
-		this.rd = r;
-	}
-	public int getrd() {
-		return this.rd;
-	}
-	
-	public int getoperand1() {
-		return operand1;
-	}
-	
-	public void setoperand2(int op2) {
-		this.operand2 = op2;
-	}
-	
-	public int getoperand2() {
-		return operand2;
-	}	
-	
-	public int getInstruction() {
-		return instruction;
-	}
-
-	public void setInstruction(int instruction) {
-		this.instruction = instruction;
+	public void setIsNOP(boolean is_NOP) {
+		NOP = is_NOP;
 	}
 }

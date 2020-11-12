@@ -1,189 +1,256 @@
 package processor.pipeline;
 
-import configuration.Configuration;
-import generic.Element;
-import generic.Event;
-import generic.ExecutionCompleteEvent;
-import generic.Simulator;
-import generic.Statistics;
-import processor.Clock;
 import processor.Processor;
+import java.util.Arrays;
 
-public class Execute implements Element {
+public class Execute {
 	Processor containingProcessor;
+	IF_EnableLatchType IF_EnableLatch;
 	OF_EX_LatchType OF_EX_Latch;
-	 EX_MA_LatchType EX_MA_Latch;
+	EX_MA_LatchType EX_MA_Latch;
 	EX_IF_LatchType EX_IF_Latch;
-	ALU alu=new ALU();
-	co_unit controlunit = new co_unit();
-	boolean is_end = false;
-	public void event_scheduler(String opcode, Execute execute){
-		long latency;
-		switch(opcode)
-		{
-		case "00100":
-		case "00101":
-			latency=Configuration.multiplier_latency;
-			break;
-		case "00110":
-		case "00111":
-			latency=Configuration.divider_latency;
-			break;
-			
-		default:
-			latency=Configuration.ALU_latency;
-			break;
-		}
+	IF_OF_LatchType IF_OF_Latch;
 	
-		Simulator.getEventQueue().addEvent(
-				new ExecutionCompleteEvent(
-						Clock.getCurrentTime()+latency,
-						execute,execute));
-		OF_EX_Latch.setEX_busy(true);
-		
-	}
-	public Execute(Processor containingProcessor, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch)
+	public Execute(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
 		this.containingProcessor = containingProcessor;
 		this.OF_EX_Latch = oF_EX_Latch;
 		this.EX_MA_Latch = eX_MA_Latch;
 		this.EX_IF_Latch = eX_IF_Latch;
+		this.IF_OF_Latch = iF_OF_Latch;
+		this.IF_EnableLatch = iF_EnableLatch;
 	}
-	public void setEnableDisable()
-	{
-		EX_IF_Latch.setIF_enable(true);
-		containingProcessor.getOFUnit().IF_OF_Latch.OF_enable=false;
-		containingProcessor.getOFUnit().is_end = false;
-		containingProcessor.getIFUnit().IF_EnableLatch.IF_enable = false;
-		containingProcessor.getIFUnit().is_end = false;
-		OF_EX_Latch.setEX_enable(false);
+	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
 	}
-	public void setDefaults()
-	{
-		controlunit.opcode="";
-		controlunit.rs1="";
-		controlunit.rs2="";
-		controlunit.rd="";
-		controlunit.Imm = "";
+	
+	/**
+	 * converts binary representation of number to signed integer
+	 * @param binary: Sring representation of binary form of number
+	 * @return: returns signed representation of given number
+	*/
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
 	}
 	
 	public void performEX()
 	{
-		if(OF_EX_Latch.isEX_enable() && !is_end){
-			
-			int isbranchtaken =0,branchPC=0;
-			if(OF_EX_Latch.isEX_busy()){
-				return;
-			}
-			
-			int instruction = OF_EX_Latch.getInstruction();
-			controlunit.setInstruction(instruction);
-			EX_MA_Latch.setInstruction(instruction);
-			
-			int op1 = OF_EX_Latch.getoperand1() ;
-			int op2 =  OF_EX_Latch.getoperand2();
+		if(EX_MA_Latch.isBusy == true) OF_EX_Latch.isBusy = true;
+		else OF_EX_Latch.isBusy = false;
+		
+		int signedInt = toSignedInteger("001");
+		String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
 
-			String opcode=controlunit.opcode;
-			int imm =	OF_EX_Latch.getimmx();
-
-			int alures=0;
-			if(controlunit.isimm() ){
-				alu.setop1(op1);
-				alu.setop2(imm);
-				alures=alu.eval(opcode);
-				if(opcode.equals("00111")) {containingProcessor.getRegisterFile().setValue(31, op1%imm);}
-				EX_MA_Latch.setop2(op2);
-				EX_MA_Latch.setaluRes(alures);
-				event_scheduler(opcode,this);
-				
-				
-			}
-			else if(!opcode.equals("11000") && !opcode.equals("11001") && !opcode.equals("11010") && !opcode.equals("11011") && !opcode.equals("11100") && !opcode.equals("11101")){
-				alu.setop1(op1);
-				alu.setop2(op2);
-				alures=alu.eval(opcode);
-				if(opcode.equals("00110")) containingProcessor.getRegisterFile().setValue(31, op1%op2);
-				EX_MA_Latch.setaluRes(alures);
-				event_scheduler(opcode,this);
-
-			}
-			else{
-				switch(Integer.parseInt(controlunit.opcode, 2)){
-					case 24:{
-						isbranchtaken= 1;
-						branchPC = OF_EX_Latch.getbranchtarget();
-						break;
-					}
-					case 25:{
-						
-						if(op1 == op2){
-							isbranchtaken=1;
-							branchPC = OF_EX_Latch.getbranchtarget();
-						}
-						break;
-					}
-					case 26:{
-						if(op1 != op2){
-							isbranchtaken= 1;
-							branchPC = OF_EX_Latch.getbranchtarget();
-						}
-						break;
-					}
-					case 27:{
-						if(op1 <op2){
-							isbranchtaken= 1;
-							branchPC = OF_EX_Latch.getbranchtarget();
-						}
-						break;
-					}
-					case 28:{
-						if(op1>op2){
-							isbranchtaken= 1;
-							branchPC = OF_EX_Latch.getbranchtarget();
-						}
-						break;
-					}
-					case 29:{
-						is_end = true;
-						
-						EX_MA_Latch.setMA_enable(true);
-					}
-				}
-				
-			}
-			if(isbranchtaken==1) {
-				
-					Statistics.controlhaz +=1 ;
-				
-				EX_IF_Latch.setisbranchtaken();
-				EX_IF_Latch.setbranchtarget(branchPC);
-				setEnableDisable();
-				Simulator.getEventQueue().deleteeventqueue(Clock.getCurrentTime());
-
+		loopAround(30);
+		if(OF_EX_Latch.isEX_enable() && EX_MA_Latch.isBusy == false) {
+			int offset = 70000;
+			if(OF_EX_Latch.isNop == true) {
+				EX_MA_Latch.isNop = true;
+				EX_MA_Latch.rd = 75000;
 			}
 			else {
-				
-				EX_MA_Latch.setrd(OF_EX_Latch.getrd());
+				EX_MA_Latch.isNop = false;
+				int aluResult = 70000;
+				int rs1 = OF_EX_Latch.rs1;
+				int rs2 = OF_EX_Latch.rs2;
+				int rd = OF_EX_Latch.rd;
+				int imm = OF_EX_Latch.imm;
+				switch(OF_EX_Latch.opcode) {
+					case "00000": {
+						aluResult = rs1 + rs2;
+						break;
+					}
+					case "00001": {
+						aluResult = rs1 + imm;
+						break;
+					}
+					case "00010": {
+						aluResult = rs1 - rs2;
+						break;
+					}
+					case "00011": {
+						aluResult = rs1 - imm;
+						break;
+					}
+					case "00100": {
+						aluResult = rs1 * rs2;
+						break;
+					}
+					case "00101": {
+						aluResult = rs1 * imm;
+						break;
+					}
+					case "00110": {
+						aluResult = rs1 / rs2;
+						int temp = rs1 % rs2;
+						containingProcessor.getRegisterFile().setValue(31, temp);
+						break;
+					}
+					case "00111": {
+						aluResult = rs1 / imm;
+						int temp = rs1 % imm;
+						containingProcessor.getRegisterFile().setValue(31, temp);
+						break;
+					}
+
+					case "01000": {
+						aluResult = rs1 & rs2;
+						break;
+					}
+					case "01001": {
+						aluResult = rs1 & imm;
+						break;
+					}
+					case "01010": {
+						aluResult = rs1 | rs2;
+						break;
+					}
+					case "01011": {
+						aluResult = rs1 | imm;
+						break;
+					}
+					case "01100": {
+						aluResult = rs1 ^ rs2;
+						break;
+					}
+					case "01101": {
+						aluResult = rs1 ^ imm;
+						break;
+					}
+
+					case "01110": {
+						if(rs1 < rs2) aluResult = 1;
+						else aluResult = 0;
+						break;
+					}
+					case "01111": {
+						if(rs1 < imm) aluResult = 1;
+						else aluResult = 0;
+					}
+
+					case "10000": {
+						aluResult = rs1 << rs2;
+						String q = Integer.toBinaryString(rs1);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(5-rs2, 5);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+					case "10001" : {
+						aluResult = rs1 << imm;
+						String q = Integer.toBinaryString(imm);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(5-imm, 5);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+					case "10010" : {
+						aluResult = rs1 >>> rs2;
+						String q = Integer.toBinaryString(rs1);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(0, rs2);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+					case "10011" : {
+						aluResult = rs1 >>> imm;
+						String q = Integer.toBinaryString(imm);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(0, imm);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+					case "10100" : {
+						aluResult = rs1 >> rs2;
+						String q = Integer.toBinaryString(rs1);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(0, rs2);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+					case "10101" : {
+						aluResult = rs1 >> imm;
+						String q = Integer.toBinaryString(imm);
+						while(q.length() != 5) q = "0" + q;
+						String x31 = q.substring(0, imm);
+						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
+						break;
+					}
+
+					case "10110"  : {
+						aluResult = rs1 + imm;
+						break;
+					}
+					case "10111" : {
+						aluResult = containingProcessor.getRegisterFile().getValue(rd) + imm;
+						break;
+					}
+
+					case "11000" : {
+						offset = containingProcessor.getRegisterFile().getValue(rd) + imm;
+						break;
+					}
+					case "11001" : {
+						if(rs1 == containingProcessor.getRegisterFile().getValue(rd)) offset = imm;
+						break;
+					}
+					case "11010" : {
+						if(rs1 != containingProcessor.getRegisterFile().getValue(rd)) offset = imm;
+						break;
+					}
+					case "11011" : {
+						if(rs1 < containingProcessor.getRegisterFile().getValue(rd)) offset = imm;
+						break;
+					}
+					case "11100" : {
+						if(rs1 > containingProcessor.getRegisterFile().getValue(rd)) offset = imm;
+						break;
+					}
+					default : break;
+				}
+				if(offset != 70000) {
+					EX_IF_Latch.isBranchTaken = true;
+					EX_IF_Latch.offset = offset - 1;
+					IF_EnableLatch.setIF_enable(true);
+					OF_EX_Latch.setEX_enable(false);
+					IF_OF_Latch.setOF_enable(false);
+					// IF_OF_Latch.instruction = 0;
+					OF_EX_Latch.imm = 0;
+					OF_EX_Latch.rd = 0;
+					OF_EX_Latch.rs1 = 0;
+					OF_EX_Latch.rs2 = 0;
+				}
+				EX_MA_Latch.aluResult = aluResult;
+				EX_MA_Latch.rs1 = rs1;
+				EX_MA_Latch.rs2 = rs2;
+				EX_MA_Latch.rd = rd;
+				EX_MA_Latch.imm = imm;
+				EX_MA_Latch.opcode = OF_EX_Latch.opcode;
+				System.out.println("EX\t" + OF_EX_Latch.insPC + "\t" + Integer.parseInt(OF_EX_Latch.opcode,2) + "\trs1:" + rs1 + "\trs2:" + rs2 + "\trd:" + rd + "\timm:" + imm + "\talu:" + aluResult) ;//+ " " + rs1 + "\t" + rs2 + "\t" + rd + "\t" + imm);
+				EX_MA_Latch.insPC = OF_EX_Latch.insPC;
+
+				if(OF_EX_Latch.opcode.equals("11101") == true ) {
+					OF_EX_Latch.setEX_enable(false);
+				}
+
+				// OF_EX_Latch.setEX_enable(false);
 			}
-			
-		}
-		else {
-			setDefaults();
-		}
-		
-	}
-	@Override
-	public void handleEvent(Event e) {
-		if(EX_MA_Latch.isMA_busy()) {
-			e.setEventTime(Clock.getCurrentTime()+1);
-			Simulator.getEventQueue().addEvent(e);
-		}
-		else {
 			OF_EX_Latch.setEX_enable(false);
 			EX_MA_Latch.setMA_enable(true);
-			OF_EX_Latch.setEX_busy(false);
+			
 		}
-		
+		//TODO
 	}
 
 }

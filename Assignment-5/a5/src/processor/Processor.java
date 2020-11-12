@@ -36,7 +36,6 @@ public class Processor {
 	{
 		registerFile = new RegisterFile();
 		mainMemory = new MainMemory();
-		//controlUnit = new control_unit() ;
 		
 		IF_EnableLatch = new IF_EnableLatchType();
 		IF_OF_Latch = new IF_OF_LatchType();
@@ -46,8 +45,8 @@ public class Processor {
 		MA_RW_Latch = new MA_RW_LatchType();
 		
 		IFUnit = new InstructionFetch(this, IF_EnableLatch, IF_OF_Latch, EX_IF_Latch);
-		OFUnit = new OperandFetch(this, IF_OF_Latch, OF_EX_Latch);
-		EXUnit = new Execute(this, OF_EX_Latch, EX_MA_Latch, EX_IF_Latch);
+		OFUnit = new OperandFetch(this, IF_OF_Latch, OF_EX_Latch,EX_MA_Latch,MA_RW_Latch,IF_EnableLatch);
+		EXUnit = new Execute(this, IF_OF_Latch, OF_EX_Latch, EX_MA_Latch, EX_IF_Latch, IF_EnableLatch);
 		MAUnit = new MemoryAccess(this, EX_MA_Latch, MA_RW_Latch);
 		RWUnit = new RegisterWrite(this, MA_RW_Latch, IF_EnableLatch);
 	}
@@ -74,8 +73,6 @@ public class Processor {
 	public void setMainMemory(MainMemory mainMemory) {
 		this.mainMemory = mainMemory;
 	}
-	
-	
 
 	public InstructionFetch getIFUnit() {
 		return IFUnit;

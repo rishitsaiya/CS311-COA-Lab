@@ -1,21 +1,15 @@
 package processor.pipeline;
 
 import configuration.Configuration;
-import generic.Element;
-import generic.Event;
-import generic.MemoryReadEvent;
-import generic.MemoryResponseEvent;
-import generic.MemoryWriteEvent;
-import generic.Simulator;
+import generic.*;
+import generic.Event.EventType;
 import processor.Clock;
 import processor.Processor;
 
 public class MemoryAccess implements Element{
 	Processor containingProcessor;
-	public EX_MA_LatchType EX_MA_Latch;
-	public MA_RW_LatchType MA_RW_Latch;
-	co_unit controlunit = new co_unit();
-	boolean is_end = false;
+	EX_MA_LatchType EX_MA_Latch;
+	MA_RW_LatchType MA_RW_Latch;
 	
 	public MemoryAccess(Processor containingProcessor, EX_MA_LatchType eX_MA_Latch, MA_RW_LatchType mA_RW_Latch)
 	{
@@ -24,91 +18,99 @@ public class MemoryAccess implements Element{
 		this.MA_RW_Latch = mA_RW_Latch;
 	}
 	
-	public void performOperations()
-	{
-		controlunit.opcode="";
-		controlunit.rs1="";
-		controlunit.rs2="";
-		controlunit.rd="";
-		controlunit.Imm = "";
-	}
-	
-	public void setEnableDisable()
-	{
-		MA_RW_Latch.setRW_enable(true);
-		EX_MA_Latch.setMA_enable(false);
-	}
-	
 	public void performMA()
 	{
-		if(EX_MA_Latch.isMA_enable() && !is_end) {
-			if(EX_MA_Latch.isMA_busy()) {
-				return;
+		// if(EX_MA_Latch.MA_enable == false) MA_RW_Latch.RW_enable = false;
+		if(EX_MA_Latch.isMA_enable() && EX_MA_Latch.isBusy == false) {
+			if(EX_MA_Latch.isNop == true) {
+				MA_RW_Latch.isNop = true;
+				MA_RW_Latch.rd = 75000;
 			}
-			//System.out.println("MA:"+"\n");
-			int op2 = EX_MA_Latch.getop2();
-			int alures = EX_MA_Latch.getaluRes();
-			int ldres=0;
-			int instruction = EX_MA_Latch.getInstruction();
-			controlunit.setInstruction(instruction);
-			/*System.out.print("Instruction code:"+instruction+"\n");
-			System.out.print("Opcode:"+controlunit.opcode+"\n");
-			System.out.print("rs1:"+Integer.parseInt(controlunit.rs1,2)+"\n");
-			System.out.print("rs2:"+Integer.parseInt(controlunit.rs2,2)+"\n");
-			System.out.print("rd:"+Integer.parseInt(controlunit.rd,2)+"\n");*/
-			MA_RW_Latch.setInstruction(instruction);
-			
-			if(controlunit.opcode.equals("11101")) {
-				is_end = true;
-			}
-				
-			
-			if(controlunit.isSt()){
-				Simulator.getEventQueue().addEvent(
-						new MemoryWriteEvent(
-								Clock.getCurrentTime()+Configuration.mainMemoryLatency,
-								this,containingProcessor.getMainMemory(),
-								alures,op2));
-				EX_MA_Latch.setMA_busy(true);
-				//containingProcessor.getMainMemory().setWord( alures, op2);
-			}
-			else if (controlunit.opcode.equals("10110")){
-				Simulator.getEventQueue().addEvent(
-						new MemoryReadEvent(
-								Clock.getCurrentTime()+Configuration.mainMemoryLatency,
-								this,containingProcessor.getMainMemory(),
-								alures));
-				EX_MA_Latch.setMA_busy(true);
-	
-				//ldres = containingProcessor.getMainMemory().getWord(alures);
-				//MA_RW_Latch.setldres(ldres);
-			}
-			else{
-				MA_RW_Latch.setalures(alures);
-				setEnableDisable();
-			}
-			//MA_RW_Latch.setRW_enable(true);
-			
-			MA_RW_Latch.setrd(EX_MA_Latch.getrd());
-		
+			else {
+				MA_RW_Latch.isNop = false;
+				int aluResult = EX_MA_Latch.aluResult;
+				int rs1 = EX_MA_Latch.rs1;
+				int rs2 = EX_MA_Latch.rs2;
+				int rd = EX_MA_Latch.rd;
+				int imm = EX_MA_Latch.imm;
+				String opcode = EX_MA_Latch.opcode;
 
+				MA_RW_Latch.insPC = EX_MA_Latch.insPC;
+				System.out.println("MA\t" + EX_MA_Latch.insPC + "\trs1:" + rs1 + "\trs2:" + rs2 + "\trd:" + rd + "\timm:" + imm + "\talu:" + aluResult);
+
+				MA_RW_Latch.aluResult = aluResult;
+				MA_RW_Latch.rs1 = rs1;
+				MA_RW_Latch.rs2 = rs2;
+				MA_RW_Latch.rd = rd;
+				MA_RW_Latch.imm = imm;
+				MA_RW_Latch.opcode = opcode;
+
+				// if(Simulator.storeresp + Configuration.mainMemoryLatency >= Clock.getCurrentTime()) EX_MA_Latch.isBusy = false;
+
+				if(opcode.equals("10110")) { //load
+					MA_RW_Latch.isLoad = true;
+					EX_MA_Latch.isBusy = true;
+					Simulator.getEventQueue().addEvent(
+						new MemoryReadEvent(
+							Clock.getCurrentTime() + Configuration.mainMemoryLatency, 
+							this, 
+							containingProcessor.getMainMemory(), aluResult)
+					);
+					EX_MA_Latch.setMA_enable(false);
+					return;
+					// aluResult = containingProcessor.getMainMemory().getWord(aluResult);
+				}
+				if(opcode.equals("10111")) {  //store
+					EX_MA_Latch.isBusy = true;
+					Simulator.storeresp = Clock.getCurrentTime();
+					Simulator.getEventQueue().addEvent(
+						new MemoryWriteEvent(
+							Clock.getCurrentTime() + Configuration.mainMemoryLatency, 
+							this, 
+							containingProcessor.getMainMemory(), 
+							aluResult, 
+							rs1)
+					);
+					EX_MA_Latch.setMA_enable(false);
+					return;
+
+					// containingProcessor.getMainMemory().setWord(aluResult, rs1);
+				}
+
+				// MA_RW_Latch.insPC = EX_MA_Latch.insPC;
+				// System.out.println("MA\t" + EX_MA_Latch.insPC + "\trs1:" + rs1 + "\trs2:" + rs2 + "\trd:" + rd + "\timm:" + imm + "\talu:" + aluResult);
+
+				// MA_RW_Latch.aluResult = aluResult;
+				// MA_RW_Latch.rs1 = rs1;
+				// MA_RW_Latch.rs2 = rs2;
+				// MA_RW_Latch.rd = rd;
+				// MA_RW_Latch.imm = imm;
+				// MA_RW_Latch.opcode = opcode;
+			}
+			EX_MA_Latch.setMA_enable(false);
+			if(EX_MA_Latch.opcode.equals("11101") == true ) {
+				EX_MA_Latch.setMA_enable(false);
+			}
+			MA_RW_Latch.setRW_enable(true);
 		}
-		else {
-			performOperations();
-		}
-	
+		//TODO
 	}
 
 	@Override
 	public void handleEvent(Event e) {
-		// TODO Auto-generated method stub
-		MemoryResponseEvent event=(MemoryResponseEvent) e;
-		MA_RW_Latch.setldres(event.getValue());
-		EX_MA_Latch.setMA_busy(false);
-		MA_RW_Latch.setRW_enable(true);
-		EX_MA_Latch.setMA_enable(false);
-		
-		
+		if(e.getEventType() == EventType.MemoryResponse) {
+			MemoryResponseEvent event = (MemoryResponseEvent) e ; 
+			MA_RW_Latch.aluResult = event.getValue();
+			MA_RW_Latch.insPC = EX_MA_Latch.insPC;
+			MA_RW_Latch.setRW_enable(true);
+			EX_MA_Latch.isBusy = false;
+		}
+		else {
+			EX_MA_Latch.isBusy = false;
+		}
+
+		// IF_OF_Latch.setOF_enable(true);
+		// IF_EnableLatch.isBusy = false;
 	}
 
 }

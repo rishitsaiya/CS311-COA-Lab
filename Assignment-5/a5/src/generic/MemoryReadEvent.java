@@ -16,8 +16,8 @@ public class MemoryReadEvent extends Event {
 	public void setAddressToReadFrom(int addressToReadFrom) {
 		this.addressToReadFrom = addressToReadFrom;
 	}
-
+	
 	public String toString() {
-		return "MemoryReadEvent: " + addressToReadFrom;
+		return "Memory read Event, Set address and get address";
 	}
 }

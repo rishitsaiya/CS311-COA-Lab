@@ -18,7 +18,6 @@ public class MemoryResponseEvent extends Event {
 	}
 
 	public String toString() {
-		return "MemoryResponseEvent: " + value;
+		return "Memory response event, Set and get value";
 	}
-
 }

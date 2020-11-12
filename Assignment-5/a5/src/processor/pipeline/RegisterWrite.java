@@ -7,7 +7,6 @@ public class RegisterWrite {
 	Processor containingProcessor;
 	MA_RW_LatchType MA_RW_Latch;
 	IF_EnableLatchType IF_EnableLatch;
-	co_unit controlunit = new co_unit();
 	
 	public RegisterWrite(Processor containingProcessor, MA_RW_LatchType mA_RW_Latch, IF_EnableLatchType iF_EnableLatch)
 	{
@@ -16,56 +15,52 @@ public class RegisterWrite {
 		this.IF_EnableLatch = iF_EnableLatch;
 	}
 	
-	public void setEnableDisable()
-	{
-		MA_RW_Latch.setRW_enable(false);
-		IF_EnableLatch.setIF_enable(true);
-	}
-	
-	public void doOperations()
-	{
-		IF_EnableLatch.setIF_enable(true);
-		controlunit.opcode="";
-		controlunit.rs1="";
-		controlunit.rs2="";
-		controlunit.rd="";
-		controlunit.Imm = "";
-	}
-	
 	public void performRW()
 	{
 		if(MA_RW_Latch.isRW_enable())
 		{
-			int instruction = MA_RW_Latch.getInstruction();
-			controlunit.setInstruction(instruction);
-			if(controlunit.opcode.equals("11101")){
-
-				Simulator.setSimulationComplete(true);
-				MA_RW_Latch.setRW_enable(false);
-				IF_EnableLatch.setIF_enable(false);
-			}
-			else {
-				int result;
-				switch(controlunit.opcode)
-				{
-					case "10110":
-						result = MA_RW_Latch.getldres();
-						break;
-					default:
-						result = MA_RW_Latch.getalures();
-						break;
+			// MA_RW_Latch.RW_enable = false;
+			if(MA_RW_Latch.isNop == false) {
+				int aluResult = MA_RW_Latch.aluResult;
+				int rs1 = MA_RW_Latch.rs1;
+				int rs2 = MA_RW_Latch.rs2;
+				int rd = MA_RW_Latch.rd;
+				int imm = MA_RW_Latch.imm;
+				String opcode = MA_RW_Latch.opcode;
+				System.out.println("RW " + MA_RW_Latch.insPC + "\trs1:" + rs1 + "\trs2:" + rs2 + "\trd:" + rd + "\timm:" + imm + "\talu:" + aluResult);
+				if(MA_RW_Latch.isLoad) {
+					containingProcessor.getRegisterFile().setValue(rd, aluResult);
+					MA_RW_Latch.isLoad = false;
 				}
-				int rd = MA_RW_Latch.getrd();
-	
-				if(controlunit.isWb())
-					containingProcessor.getRegisterFile().setValue(rd, result);
+				else {
+					if(opcode.equals("11101") == false) {
+						if(opcode.equals("11000") == false) {
+							if(opcode.equals("11001") == false) {
+								if(opcode.equals("11010") == false) {
+									if(opcode.equals("11011") == false) {
+										if(opcode.equals("11100") == false) {
+											containingProcessor.getRegisterFile().setValue(rd, aluResult);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 				
-				setEnableDisable();
+				// if instruction being processed is an end instruction, remember to call Simulator.setSimulationComplete(true);
+				
+				
+				MA_RW_Latch.setRW_enable(false);
+				// IF_EnableLatch.setIF_enable(true);
+				if(MA_RW_Latch.opcode.equals("11101")) {
+					Simulator.setSimulationComplete(true);
+					IF_EnableLatch.setIF_enable(false);
+				}
 			}
-
+			//TODO
+			
 		}
-		else
-			doOperations();
 	}
 
 }

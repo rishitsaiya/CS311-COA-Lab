@@ -1,23 +1,17 @@
 package processor.pipeline;
 
 import configuration.Configuration;
-import generic.MemoryReadEvent;
-import generic.MemoryResponseEvent;
-import generic.Simulator;
+import generic.*;
 import processor.Clock;
 import processor.Processor;
-import generic.Element;
-import generic.Event;
-
 
 public class InstructionFetch implements Element{
 	
 	Processor containingProcessor;
-	public IF_EnableLatchType IF_EnableLatch;
-	public IF_OF_LatchType IF_OF_Latch;
+	IF_EnableLatchType IF_EnableLatch;
+	IF_OF_LatchType IF_OF_Latch;
 	EX_IF_LatchType EX_IF_Latch;
-	//boolean conflict = false;
-	boolean is_end = false;
+	int currentPC;
 	
 	public InstructionFetch(Processor containingProcessor, IF_EnableLatchType iF_EnableLatch, IF_OF_LatchType iF_OF_Latch, EX_IF_LatchType eX_IF_Latch)
 	{
@@ -27,61 +21,84 @@ public class InstructionFetch implements Element{
 		this.EX_IF_Latch = eX_IF_Latch;
 	}
 	
-	public void setEnableDisable(Event e)
-	{
-		MemoryResponseEvent event=(MemoryResponseEvent) e;
-		IF_OF_Latch.setInstruction(event.getValue());
-		IF_OF_Latch.setOF_enable(true);
-		IF_EnableLatch.setIF_busy(false);
-	}
-	
 	public void performIF()
 	{
-			if(IF_EnableLatch.isIF_enable() && !is_end)
-			{
-				if(IF_EnableLatch.isIF_busy()) {
-					return;
-				}
-				
-				if(EX_IF_Latch.IF_enable){
-					
+		if(IF_EnableLatch.isIF_enable()) {
+			if(IF_EnableLatch.isBusy == true) return;
 
-					if(EX_IF_Latch.isBranchTaken){
-						containingProcessor.getRegisterFile().setProgramCounter(EX_IF_Latch.branchTarget);
-					}
-					EX_IF_Latch.IF_enable=false;
-				}
-				
-			
-				int currentPC = containingProcessor.getRegisterFile().getProgramCounter();
-				
-					Simulator.getEventQueue().addEvent(
-							new MemoryReadEvent(
-									Clock.getCurrentTime()+Configuration.mainMemoryLatency,
-									this,containingProcessor.getMainMemory(),
-									containingProcessor.getRegisterFile().getProgramCounter()));
-					IF_EnableLatch.setIF_busy(true);
-					containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
-				
-				
+			currentPC = containingProcessor.getRegisterFile().getProgramCounter();
+			if(EX_IF_Latch.isBranchTaken == true) {
+				currentPC = currentPC + EX_IF_Latch.offset - 1;
+				EX_IF_Latch.isBranchTaken = false;
 			}
-		
-		
+			
+			// System.out.println("IF is enabled with instruction: " + Integer.toBinaryString(newInstruction) + "..");
+			System.out.println("currentPC " + Integer.toString(currentPC));
+			Simulator.ins_count++;
+			Simulator.getEventQueue().addEvent(
+				new MemoryReadEvent(
+					Clock.getCurrentTime() + Configuration.mainMemoryLatency, 
+					this, 
+					containingProcessor.getMainMemory(), 
+					currentPC)
+			);
+
+			IF_EnableLatch.isBusy = true;
+			
+//			System.out.println(Integer.toBinaryString(newInstruction).substring(0, 5) + "::::::::::::::");
+			
+//			String end_program = Integer.toBinaryString(newInstruction).substring(0, 5);
+			
+//			String instruction = Integer.toBinaryString(newInstruction);
+//			System.out.println("IF : " + instruction + ".");
+//			while (instruction.length() != 32) {
+//				instruction = "0" + instruction;
+//			}
+//			String opcode = instruction.substring(0, 5);
+//			if (opcode == "11101") {
+//				System.out.println("End program on end.");
+//				Simulator.setSimulationComplete(true);
+//			}
+
+//			IF_EnableLatch.setIF_enable(false);
+
+						
+			// System.out.println(currentPC);
+			// int newInstruction = containingProcessor.getMainMemory().getWord(currentPC);
+			// System.out.println("IF " + currentPC + "\t" + newInstruction);
+			// IF_OF_Latch.instruction = newInstruction;
+			// IF_OF_Latch.setInstruction(newInstruction);
+			// IF_OF_Latch.insPC = currentPC;
+			// containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
+			
+			// IF_EnableLatch.setIF_enable(false);
+			// IF_OF_Latch.setOF_enable(true);
+		}
 	}
 
 	@Override
+
 	public void handleEvent(Event e) {
-		// TODO Auto-generated method stub
-		if(IF_OF_Latch.OF_busy) {
-			e.setEventTime(Clock.getCurrentTime()+1);
+		if(IF_OF_Latch.isBusy == true) {
+			System.out.println("IFOF is busy");
+			e.setEventTime(Clock.getCurrentTime() + 1);
 			Simulator.getEventQueue().addEvent(e);
 		}
 		else {
-			
-			setEnableDisable(e);
+			MemoryResponseEvent event = (MemoryResponseEvent) e ; 
+			System.out.println("Memory is responding");
+			if(EX_IF_Latch.isBranchTaken == false)	{
+				IF_OF_Latch.setInstruction(event.getValue());
+				// Simulator.ins_count++;
+			}
+			else IF_OF_Latch.setInstruction(0);
+			IF_OF_Latch.insPC = this.currentPC;
+			containingProcessor.getRegisterFile().setProgramCounter(this.currentPC + 1);
+			System.out.println("event value " + event.getValue());
+			IF_OF_Latch.setOF_enable(true);
+			IF_EnableLatch.isBusy = false;
+
 		}
-		
 	}
-		
 
 }

@@ -1,18 +1,10 @@
 package processor.memorysystem;
 
-import generic.Element;
-import generic.Event;
-import generic.Event.EventType;
-import generic.MemoryReadEvent;
-import generic.MemoryResponseEvent;
-import generic.MemoryWriteEvent;
-import generic.Simulator;
-import processor.Clock;
-import processor.pipeline.MemoryAccess;
+import generic.*;
+import processor.*;
 
 public class MainMemory implements Element{
 	int[] memory;
-	boolean ismain_busy;
 	
 	public MainMemory()
 	{
@@ -28,12 +20,7 @@ public class MainMemory implements Element{
 	{
 		memory[address] = value;
 	}
-	public void setmainbusy(boolean m) {
-		ismain_busy=m;
-	}
-	public boolean ismainbusy() {
-		return ismain_busy;
-	}
+	
 	public String getContentsAsString(int startingAddress, int endingAddress)
 	{
 		if(startingAddress == endingAddress)
@@ -50,26 +37,32 @@ public class MainMemory implements Element{
 	}
 
 	@Override
-	public void handleEvent ( Event e ) {
-		if ( e.getEventType ( ) == EventType.MemoryRead )
-		{
-			MemoryReadEvent event = ( MemoryReadEvent ) e ;
-			Simulator. getEventQueue().addEvent(
-			new MemoryResponseEvent (
-			Clock.getCurrentTime () ,
-			this ,
-			event.getRequestingElement ( ) ,
-			getWord (event.getAddressToReadFrom()))) ;
+	public void handleEvent(Event e) {
+		if (e.getEventType() == Event.EventType.MemoryRead) {
+			System.out.println("Memory Read Event Happening");
+			MemoryReadEvent event = (MemoryReadEvent) e ; 
+			System.out.println(getWord(event.getAddressToReadFrom()));
+			Simulator.getEventQueue().addEvent( 
+				new MemoryResponseEvent( 
+					Clock.getCurrentTime(), 
+					this, 
+					event.getRequestingElement(), 
+					getWord(event.getAddressToReadFrom())
+				)
+			); 
 		}
-		else if(e.getEventType ( ) == EventType.MemoryWrite) {
-			//System.out.println("LLLLEVEVVERRE");
-			MemoryWriteEvent event = ( MemoryWriteEvent ) e ;
-			//event.getRequestingElement().EX_MA_Latch.setMA_busy(false);
-			((MemoryAccess)event.getRequestingElement()).EX_MA_Latch.setMA_busy(false);
-			((MemoryAccess)event.getRequestingElement()).MA_RW_Latch.setRW_enable(true);
-
-			setWord(event.getAddressToWriteTo(),event.getValue());
-			
+		else if(e.getEventType() == Event.EventType.MemoryWrite) {
+			System.out.println("Memory Write Event Happening");
+			MemoryWriteEvent event = (MemoryWriteEvent) e ; 
+			System.out.println(getWord(event.getAddressToWriteTo()));
+			this.setWord(event.getAddressToWriteTo(), event.getValue());
+			Simulator.getEventQueue().addEvent(
+				new ExecutionCompleteEvent(
+					Clock.getCurrentTime(), 
+					this, 
+					event.getRequestingElement())
+			);
 		}
 	}
+
 }
