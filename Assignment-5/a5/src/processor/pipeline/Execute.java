@@ -11,8 +11,7 @@ public class Execute {
 	EX_IF_LatchType EX_IF_Latch;
 	IF_OF_LatchType IF_OF_Latch;
 	
-	public Execute(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch, IF_EnableLatchType iF_EnableLatch)
-	{
+	public Execute(Processor containingProcessor, IF_OF_LatchType iF_OF_Latch, OF_EX_LatchType oF_EX_Latch, EX_MA_LatchType eX_MA_Latch, EX_IF_LatchType eX_IF_Latch, IF_EnableLatchType iF_EnableLatch) {
 		this.containingProcessor = containingProcessor;
 		this.OF_EX_Latch = oF_EX_Latch;
 		this.EX_MA_Latch = eX_MA_Latch;
@@ -44,8 +43,7 @@ public class Execute {
 			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
 	}
 	
-	public void performEX()
-	{
+	public void performEX() {
 		if(EX_MA_Latch.isBusy == true) OF_EX_Latch.isBusy = true;
 		else OF_EX_Latch.isBusy = false;
 		
@@ -150,6 +148,7 @@ public class Execute {
 					case "10001" : {
 						aluResult = rs1 << imm;
 						String q = Integer.toBinaryString(imm);
+
 						while(q.length() != 5) q = "0" + q;
 						String x31 = q.substring(5-imm, 5);
 						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
@@ -158,6 +157,7 @@ public class Execute {
 					case "10010" : {
 						aluResult = rs1 >>> rs2;
 						String q = Integer.toBinaryString(rs1);
+
 						while(q.length() != 5) q = "0" + q;
 						String x31 = q.substring(0, rs2);
 						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
@@ -166,6 +166,7 @@ public class Execute {
 					case "10011" : {
 						aluResult = rs1 >>> imm;
 						String q = Integer.toBinaryString(imm);
+
 						while(q.length() != 5) q = "0" + q;
 						String x31 = q.substring(0, imm);
 						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
@@ -174,6 +175,7 @@ public class Execute {
 					case "10100" : {
 						aluResult = rs1 >> rs2;
 						String q = Integer.toBinaryString(rs1);
+
 						while(q.length() != 5) q = "0" + q;
 						String x31 = q.substring(0, rs2);
 						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));
@@ -182,6 +184,7 @@ public class Execute {
 					case "10101" : {
 						aluResult = rs1 >> imm;
 						String q = Integer.toBinaryString(imm);
+						
 						while(q.length() != 5) q = "0" + q;
 						String x31 = q.substring(0, imm);
 						containingProcessor.getRegisterFile().setValue(31, Integer.parseInt(x31,2));

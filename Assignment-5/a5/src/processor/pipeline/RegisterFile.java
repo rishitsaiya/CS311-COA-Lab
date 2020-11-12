@@ -4,14 +4,20 @@ public class RegisterFile {
 	int[] registerFile;
 	int programCounter;
 	
-	public RegisterFile()
-	{
+	public RegisterFile() {
 		registerFile = new int[32];
 		registerFile[0]=0;			//%xo is always 0 [RISC V]
 	}
+
+	public int getSize() {
+		return 32;
+	}
+
+	public String toString() {
+		return "RegisterFile";
+	}
 	
-	public int getValue(int registerNumber)
-	{
+	public int getValue(int registerNumber) {
 		return registerFile[registerNumber];
 	}
 	

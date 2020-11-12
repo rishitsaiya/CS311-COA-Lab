@@ -11,8 +11,7 @@ public class OF_EX_LatchType {
 	boolean isBusy;
 	boolean NOP;
 	
-	public OF_EX_LatchType()
-	{
+	public OF_EX_LatchType() {
 		EX_enable = false;
 		opcode = "70000";
 		rs1 = 70000;
@@ -24,6 +23,14 @@ public class OF_EX_LatchType {
 		rs1addr = 45;
 		rs2addr = 45;
 		isBusy = false;
+	}
+
+	public String toString() {
+		return "OF_EX_LatchType";
+	}
+
+	public boolean comparePC (int pc) {
+		return insPC == pc;
 	}
 
 	public boolean isEX_enable() {

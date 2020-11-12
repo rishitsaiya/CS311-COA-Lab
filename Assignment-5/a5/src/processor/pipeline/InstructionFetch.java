@@ -44,35 +44,6 @@ public class InstructionFetch implements Element{
 			);
 
 			IF_EnableLatch.isBusy = true;
-			
-//			System.out.println(Integer.toBinaryString(newInstruction).substring(0, 5) + "::::::::::::::");
-			
-//			String end_program = Integer.toBinaryString(newInstruction).substring(0, 5);
-			
-//			String instruction = Integer.toBinaryString(newInstruction);
-//			System.out.println("IF : " + instruction + ".");
-//			while (instruction.length() != 32) {
-//				instruction = "0" + instruction;
-//			}
-//			String opcode = instruction.substring(0, 5);
-//			if (opcode == "11101") {
-//				System.out.println("End program on end.");
-//				Simulator.setSimulationComplete(true);
-//			}
-
-//			IF_EnableLatch.setIF_enable(false);
-
-						
-			// System.out.println(currentPC);
-			// int newInstruction = containingProcessor.getMainMemory().getWord(currentPC);
-			// System.out.println("IF " + currentPC + "\t" + newInstruction);
-			// IF_OF_Latch.instruction = newInstruction;
-			// IF_OF_Latch.setInstruction(newInstruction);
-			// IF_OF_Latch.insPC = currentPC;
-			// containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
-			
-			// IF_EnableLatch.setIF_enable(false);
-			// IF_OF_Latch.setOF_enable(true);
 		}
 	}
 

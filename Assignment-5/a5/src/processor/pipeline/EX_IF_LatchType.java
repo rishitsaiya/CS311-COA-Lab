@@ -11,6 +11,18 @@ public class EX_IF_LatchType {
 		isBranchTaken = false;
 		offset = 70000;
 	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public boolean getIsBranchTaken() {
+		return isBranchTaken;
+	}
+
+	public void setPc(int pc) {
+		this.PC = pc;
+	}
 	
 	public boolean getIS_enable() {
 		return IS_enable;
