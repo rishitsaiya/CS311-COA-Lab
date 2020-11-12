@@ -14,7 +14,7 @@ public class MemoryReadEvent extends Event {
 	}
 
 	public boolean checkEqual(int address) {
-		return addressToReadFrom = address;
+		return addressToReadFrom == address;
 	}
 
 	public void setAddressToReadFrom(int addressToReadFrom) {

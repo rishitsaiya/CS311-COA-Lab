@@ -24,7 +24,7 @@ public class Event {
 		this.eventTime = eventTime;
 	}
 
-	public int checkParity() {
+	public long checkParity() {
 		return eventTime % 2;
 	}
 
