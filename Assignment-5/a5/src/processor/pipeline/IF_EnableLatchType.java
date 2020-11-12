@@ -18,7 +18,7 @@ public class IF_EnableLatchType {
 		return IF_enable;
 	}
 
-	public IF_EnableLatchType(boolean iF_enable, isBusy) {
+	public IF_EnableLatchType(boolean iF_enable, boolean isBusy) {
 		this.IF_enable = iF_enable;
 		this.isBusy = isBusy;
 	}
