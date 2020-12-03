@@ -10,6 +10,14 @@ public class RegisterFile {
 		registerFile[0]=0;			//%xo is always 0 [RISC V]
 	}
 	
+	public int getSize() {
+		return 32;
+	}
+
+	public String toString() {
+		return "RegisterFile";
+	}
+	
 	public int getValue(int registerNumber)
 	{
 		return registerFile[registerNumber];
