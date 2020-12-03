@@ -5,38 +5,57 @@ import processor.*;
 import configuration.Configuration;
 
 public class Cache implements Element {
-	Processor containingProcessor;
 	public int latency ;
-	int csize ;
-	int miss_addr;
-	int read;
-    int write_data;
-    CacheLine[] cach;
+	Processor containingProcessor;
+	int csize, miss_addr, read, write_data, temp;
     boolean isPresent = true;
-    int temp;
+    CacheLine[] cach;
     int[] index;
-
-	public Cache(Processor containingProcessor, int l, int s) {
+	
+	public Cache(Processor containingProcessor, int latency, int cacheSize) {
 		this.containingProcessor = containingProcessor;
-        this.latency = l;
-        this.csize = s;
-        temp = (int)(Math.log(this.csize/8)/Math.log(2));
-        cach = new CacheLine[csize/8];
-		for(int i = 0; i < csize/8; i++) {
-			cach[i] = new CacheLine();
-		}
+        this.latency = latency;
+        this.csize = cacheSize;
+
+        this.temp = (int)(Math.log(this.csize/8)/Math.log(2));
+        this.cach = new CacheLine[csize/8];
+
+		for(int i = 0; i < csize/8; i++) 
+			this.cach[i] = new CacheLine();
+    }
+
+    public boolean checkPresence() {
+        return this.isPresent;
+    }
+
+    public int[] getIndexes() {
+        return this.index;
+    }
+
+    public CacheLine[] getCaches() {
+        return this.cach;
+    }
+
+    public Processor getProcessor() {
+        return this.containingProcessor;
+    }
+
+    public void setProcessor(Processor processor) {
+        this.containingProcessor = processor;
+    }
+
+    public String toString() {
+        return self.latency + " : latency";
     }
     
-    public void handleCacheMiss(int addr ) {
+    public void handleCacheMiss(int addr) {
 		Simulator.getEventQueue().addEvent(
 				new MemoryReadEvent(
-						Clock.getCurrentTime()+Configuration.mainMemoryLatency,
+						Clock.getCurrentTime() + Configuration.mainMemoryLatency,
                         this,
                         containingProcessor.getMainMemory(),
                         addr));
                         
-
-		
 	}
 
     
@@ -45,18 +64,17 @@ public class Cache implements Element {
         String ind = "";
         int temp_ind;
        
-        for(int i = 0; i < 32-a.length(); i++){
+        for(int i = 0; i < 32-a.length(); i++)
             a = "0" + a;
-        }
-        for(int i = 0; i < temp; i++ ) {
+        
+        for(int i = 0; i < temp; i++) 
             ind = ind + "1";
-        }
-        if(temp == 0){
+        
+        if(temp == 0)
             temp_ind = 0;
-        }
-        else {
+        else 
             temp_ind = address & Integer.parseInt(ind, 2);
-        }
+        
 
         System.out.println("in the Cache " + address);
         int add_tag = Integer.parseInt(a.substring(0, a.length()-temp),2);
@@ -74,7 +92,6 @@ public class Cache implements Element {
         else {
             isPresent = false;
             return -1;
-
         }
 
     }
@@ -84,22 +101,20 @@ public class Cache implements Element {
         String ind = "";
         int temp_ind;
 
-        for(int i = 0;i <32-a.length(); i++){
+        for(int i = 0; i < 32-a.length(); i++)
             a = "0" + a;
-        }
-        for(int i = 0; i < temp; i++ ){
+        
+        for(int i = 0; i < temp; i++ )
             ind = ind + "1";
-        }
-        if(temp == 0){
+        
+        if(temp == 0)
             temp_ind = 0;
-        }
-        else {
+        else 
             temp_ind = address & Integer.parseInt(ind, 2);
-        }
+        
 
         int tag = Integer.parseInt(a.substring(0, a.length()-temp),2);
         cach[temp_ind].setValue(tag, value);
-
 
     }
 
@@ -122,11 +137,13 @@ public class Cache implements Element {
             else{
                 System.out.println("Missed");
                 this.miss_addr = ee.getAddressToReadFrom();
+
                 ee.setEventTime(Clock.getCurrentTime() + Configuration.mainMemoryLatency+1);
                 Simulator.getEventQueue().addEvent(ee);
                 handleCacheMiss(ee.getAddressToReadFrom());
             }
         }
+
        else if(e.getEventType() == Event.EventType.MemoryResponse){
             MemoryResponseEvent ee = (MemoryResponseEvent) e;
             cacheWrite(this.miss_addr, ee.getValue());
