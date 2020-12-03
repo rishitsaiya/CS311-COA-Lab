@@ -47,7 +47,7 @@ public class Cache implements Element {
     }
 
     public String toString() {
-        return self.latency + " : latency";
+        return Integer.toString(this.latency) + " : latency";
     }
     
     public void handleCacheMiss(int addr) {

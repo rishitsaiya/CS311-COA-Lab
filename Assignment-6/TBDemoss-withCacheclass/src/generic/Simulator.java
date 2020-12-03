@@ -28,34 +28,7 @@ public class Simulator {
 		simulationComplete = false;
 	}
 	
-	static void loadProgram(String assemblyProgramFile) throws FileNotFoundException
-	{
-		System.out.println("inside load program "+assemblyProgramFile);
-		DataInputStream instr = new DataInputStream(new BufferedInputStream(new FileInputStream(assemblyProgramFile)));
-		try{
-			int n=instr.readInt();
-			int i;
-			for(i=0;i<n;i++){
-				int temp = instr.readInt();
-				processor.getMainMemory().setWord(i,temp);
-			}
-			int pc =i;
-			processor.getRegisterFile().setProgramCounter(pc);
-
-			while(instr.available()>0){
-				int temp = instr.readInt();
-				processor.getMainMemory().setWord(i,temp);
-				i++;
-			}
-			processor.getRegisterFile().setValue(0,0);
-			processor.getRegisterFile().setValue(1,65535);
-			processor.getRegisterFile().setValue(2,65535);
-
-			instr.close();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
+	static void loadProgram(String assemblyProgramFile) throws FileNotFoundException {
 		/*
 		 * TODO
 		 * 1. load the program into memory according to the program layout described
@@ -66,13 +39,46 @@ public class Simulator {
 		 *     x1 = 65535
 		 *     x2 = 65535
 		 */
+		 
+		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(assemblyProgramFile)));
+		
+		try{
+			int n = dis.readInt();
+			int i;
+			for(i=0;i<n;i++){
+				int temp = dis.readInt();
+				processor.getMainMemory().setWord(i,temp);
+			}
+			
+			int pc = i;
+			int offset = 1;
+			processor.getRegisterFile().setProgramCounter(pc);
+
+			while(dis.available()>0){
+				int temp = dis.readInt();
+				processor.getMainMemory().setWord(i,temp);
+				i += offset;
+			}
+			
+			processor.getRegisterFile().setValue(0,0);
+			processor.getRegisterFile().setValue(1,65535);
+			processor.getRegisterFile().setValue(2,65535);
+
+			dis.close();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
-	public static void simulate()
-	{
+	public static EventQueue getEventQueue() { 
+		return eventQueue ; 
+	}
+	
+	public static void simulate() {
 		int cycles = 0;
-		while(Simulator.simulationComplete == false)
-		{
+		
+		while(Simulator.simulationComplete == false) {
 			processor.getRWUnit().performRW();
 			processor.getMAUnit().performMA();
 			processor.getEXUnit().performEX();
@@ -80,26 +86,19 @@ public class Simulator {
 			processor.getOFUnit().performOF();
 			processor.getIFUnit().performIF();
 			Clock.incrementClock();
-			cycles++;
-			System.out.println("-------------------------------------------");
+			cycles += 1;
 		}
-		System.out.println("Cycles Taken:         " + cycles);
-		System.out.println("Instruction Executed: " + ins_count);
+		
 		// TODO
-		Statistics stat = new Statistics();
-		stat.setNumberOfCycles(cycles);
-		stat.setNumberOfInstructions(ins_count);
-		stat.setCPI();
-		stat.setIPC();
 		// set statistics
+		Statistics.setNumberOfCycles(cycles);
+		Statistics.setNumberOfInstructions(ins_count);
+		Statistics.setCPI();
+		
 	}
 	
-	public static void setSimulationComplete(boolean value)
-	{
+	public static void setSimulationComplete(boolean value)	{
 		simulationComplete = value;
-	}
-	public static EventQueue getEventQueue() { 
-		return eventQueue ; 
 	}
 
 }

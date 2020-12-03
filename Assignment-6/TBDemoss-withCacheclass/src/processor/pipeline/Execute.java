@@ -1,6 +1,7 @@
 package processor.pipeline;
 
 import processor.Processor;
+import java.util.Arrays;
 
 public class Execute {
 	Processor containingProcessor;
@@ -20,11 +21,38 @@ public class Execute {
 		this.IF_EnableLatch = iF_EnableLatch;
 	}
 	
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	/**
+	 * converts binary representation of number to signed integer
+	 * @param binary: Sring representation of binary form of number
+	 * @return: returns signed representation of given number
+	*/
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
+	}
+
 	public void performEX()
 	{
 		if(EX_MA_Latch.isBusy == true) OF_EX_Latch.isBusy = true;
 		else OF_EX_Latch.isBusy = false;
-		// if(OF_EX_Latch.EX_enable == false)  EX_MA_Latch.MA_enable = false;
+
+		int signedInt = toSignedInteger("001");
+		String binaryNum = toBinaryOfSpecificPrecision(signedInt, 5);
+
+		loopAround(30);		
 		if(OF_EX_Latch.isEX_enable() && EX_MA_Latch.isBusy == false) {
 			int offset = 70000;
 			if(OF_EX_Latch.isNop == true) {

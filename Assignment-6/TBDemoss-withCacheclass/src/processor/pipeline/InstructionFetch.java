@@ -35,6 +35,8 @@ public class InstructionFetch implements Element{
 				currentPC = currentPC + EX_IF_Latch.offset - 1;
 				EX_IF_Latch.isBranchTaken = false;
 			}
+
+			// System.out.println("IF is enabled with instruction: " + Integer.toBinaryString(newInstruction) + "..");
 			System.out.println("new instrution requested");
 			Simulator.ins_count++;
 			Simulator.getEventQueue().addEvent(
@@ -47,18 +49,6 @@ public class InstructionFetch implements Element{
 
 			IF_EnableLatch.isBusy = true;
 
-
-						
-			// System.out.println(currentPC);
-			// int newInstruction = containingProcessor.getMainMemory().getWord(currentPC);
-			// System.out.println("IF " + currentPC + "\t" + newInstruction);
-			// IF_OF_Latch.instruction = newInstruction;
-			// IF_OF_Latch.setInstruction(newInstruction);
-			// IF_OF_Latch.insPC = currentPC;
-			// containingProcessor.getRegisterFile().setProgramCounter(currentPC + 1);
-			
-			// IF_EnableLatch.setIF_enable(false);
-			// IF_OF_Latch.setOF_enable(true);
 		}
 	}
 

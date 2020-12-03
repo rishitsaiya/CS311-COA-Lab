@@ -1,6 +1,7 @@
 package processor.pipeline;
 
 import processor.Processor;
+import java.util.Arrays;
 
 public class OperandFetch {
 	Processor containingProcessor;
@@ -19,12 +20,57 @@ public class OperandFetch {
 		this.MA_RW_Latch = mA_RW_Latch;
 		this.IF_EnableLatch = iF_EnableLatch;
 	}
+
+	public static char flip(char c) {
+		return (c == '0') ? '1' : '0';
+	}
+
+	public static String twosComplement(String bin) {
+		String twos = "", ones = "";
+		for (int i = 0; i < bin.length() && true; i++) {
+			ones += flip(bin.charAt(i));
+		}
+
+		StringBuilder builder = new StringBuilder(ones);
+		boolean b = false;
+		for (int i = ones.length() - 1; i > 0 && i > -2; i--) {
+			if (ones.charAt(i) == '1') {
+				builder.setCharAt(i, '0');
+			} else {
+				builder.setCharAt(i, '1');
+				b = true;
+				break;
+			}
+		}
+		if (!b) {
+			builder.append("1", 0, 7);
+		}
+		twos = builder.toString();
+		return twos;
+	}
+
+	private static String toBinaryOfSpecificPrecision(int num, int lenOfTargetString) {
+		String binary = String.format("%" + lenOfTargetString + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		return binary;
+	}
+	
+	private static int toSignedInteger(String binary) {
+		int n = 32 - binary.length();
+        char[] sign_ext = new char[n];
+        Arrays.fill(sign_ext, binary.charAt(0));
+        int signedInteger = (int) Long.parseLong(new String(sign_ext) + binary, 2);
+        return signedInteger;
+	}
+
+	private void loopAround(int num) {
+		for (int i = 0; i < num; i += 1)
+			toSignedInteger(toBinaryOfSpecificPrecision(i, 20));
+	}
 	
 	public void performOF()
 	{
 		if(OF_EX_Latch.isBusy == true) IF_OF_Latch.isBusy = true;
 		else IF_OF_Latch.isBusy = false;
-		// if(IF_OF_Latch.isOF_enable() == false) OF_EX_Latch.EX_enable = false;
 		if(IF_OF_Latch.isOF_enable() && OF_EX_Latch.isBusy == false)
 		{
 			String insStr = Integer.toBinaryString(IF_OF_Latch.getInstruction());
@@ -104,35 +150,7 @@ public class OperandFetch {
 			int rdMA = EX_MA_Latch.rd;
 			int rdRW = MA_RW_Latch.rd;
 
-			// if(((rs1addr == rdEX || rs2addr == rdEX) && (OF_EX_Latch.isEX_enable())) || ((rs1addr == rdMA || rs2addr == rdMA) && (EX_MA_Latch.isMA_enable())) || ((rs1addr == rdRW || rs2addr == rdRW) && (OF_EX_Latch.isEX_enable()))) {
-			// 	System.out.println("Conflict1\trs1addr:" + rs1addr + "\trs2addr:" + rs2addr);
-			// 	IF_EnableLatch.setIF_enable(false);
-			// 	// IF_OF_Latch.setOF_enable(false);
-			// 	OF_EX_Latch.setEX_enable(false);
-			// 	OF_EX_Latch.isNop = true;
-			// 	OF_EX_Latch.rd = 75000;
-			// }
-			// else if(24 < opcode && opcode < 29) {
-			// 	if(rd == rdEX || rd == rdMA || rd == rdMA) {
-			// 		System.out.println("Conflict2");
-			// 		IF_EnableLatch.setIF_enable(false);
-			// 		// IF_OF_Latch.setOF_enable(false);
-			// 		OF_EX_Latch.setEX_enable(false);
-			// 		OF_EX_Latch.isNop = true;
-			// 		OF_EX_Latch.rd = 75000;
-			// 	}
-			// 	else {
-			// 		OF_EX_Latch.isNop = false;
-			// 		OF_EX_Latch.opcode = op;
-			// 		OF_EX_Latch.rs1 = rs1;
-			// 		OF_EX_Latch.rs2 = rs2;
-			// 		OF_EX_Latch.rd = rd;
-			// 		OF_EX_Latch.imm = imm;
-			// 		OF_EX_Latch.insPC = IF_OF_Latch.insPC;
-			// 		OF_EX_Latch.setEX_enable(true);
-			// 		IF_EnableLatch.setIF_enable(true);
-			// 	}
-			// }
+			
 			if(1 == 3) {}
 			else {
 				OF_EX_Latch.isNop = false;

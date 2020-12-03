@@ -9,25 +9,35 @@ public class EventQueue {
 	
 	PriorityQueue<Event> queue;
 	
-	public EventQueue()
-	{
+	public EventQueue() {
 		queue = new PriorityQueue<Event>(new EventComparator());
 	}
 	
-	public void addEvent(Event event)
-	{
-		System.out.println("Adding event of " + event.getRequestingElement() + " " + event.getProcessingElement());
+	public void addEvent(Event event) {
 		queue.add(event);
 	}
 
-	public void processEvents()
-	{
-		while(queue.isEmpty() == false && queue.peek().getEventTime() <= Clock.getCurrentTime())
-		{
+	public void EventQueue(PriorityQueue<Event> queue) {
+		this.queue = queue;
+	}
+
+	public boolean isEmpty() {
+		return queue.size() == 0;
+	}
+
+	public int getSize() {
+		return queue.size();
+	}
+
+	public void processEvents() {
+		while(queue.isEmpty() == false && queue.peek().getEventTime() <= Clock.getCurrentTime()) {
 			Event event = queue.poll();
-			System.out.println("Process event of " + event.getProcessingElement());
 			event.getProcessingElement().handleEvent(event);
 		}
+	}
+	
+	public String toString() {
+		return "Add event and process event";
 	}
 }
 

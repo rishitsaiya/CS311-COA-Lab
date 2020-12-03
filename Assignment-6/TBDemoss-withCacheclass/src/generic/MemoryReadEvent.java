@@ -13,7 +13,15 @@ public class MemoryReadEvent extends Event {
 		return addressToReadFrom;
 	}
 
+	public boolean checkEqual(int address) {
+		return addressToReadFrom == address;
+	}
+
 	public void setAddressToReadFrom(int addressToReadFrom) {
 		this.addressToReadFrom = addressToReadFrom;
+	}
+	
+	public String toString() {
+		return "Memory read Event, Set address and get address";
 	}
 }

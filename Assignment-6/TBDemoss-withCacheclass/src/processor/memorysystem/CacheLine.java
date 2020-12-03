@@ -34,6 +34,7 @@ public class CacheLine{
 
     public int setLru(int newLru) {
         this.lru = newLru;
+        return this.lru;
     }
 
     public void setValue(int tag, int value) {
@@ -53,6 +54,6 @@ public class CacheLine{
 	}
 
     public String toString() {
-        return this.lru;
+        return Integer.toString(this.lru);
     }
 }

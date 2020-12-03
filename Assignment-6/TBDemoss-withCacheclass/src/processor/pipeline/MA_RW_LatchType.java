@@ -10,9 +10,11 @@ public class MA_RW_LatchType {
 	int insPC;
 	boolean isLoad;
 	boolean isNop;
+	int load_result;
+	int alu_result;
+	boolean NOP;
 	
-	public MA_RW_LatchType()
-	{
+	public MA_RW_LatchType() {
 		RW_enable = false;
 		opcode = "70000";
 		rs1 = 70000;
@@ -27,6 +29,10 @@ public class MA_RW_LatchType {
 		rs2addr = 45;
 	}
 
+	public String toString() {
+		return "MA_RW_LatchType";
+	}
+
 	public boolean isRW_enable() {
 		return RW_enable;
 	}
@@ -35,4 +41,27 @@ public class MA_RW_LatchType {
 		RW_enable = rW_enable;
 	}
 
+	public void setLoad_result(int result) {
+		load_result = result;
+	}
+
+	public int getLoad_result() {
+		return load_result;
+	}
+
+	public int getALU_result() {
+		return alu_result;
+	}
+
+	public void setALU_result(int result) {
+		alu_result = result;
+	}
+	
+	public boolean getIsNOP() {
+		return NOP;
+	}
+	
+	public void setIsNOP(boolean is_NOP) {
+		NOP = is_NOP;
+	}
 }
