@@ -1,5 +1,7 @@
 package processor.memorysystem;
 
+import java.io.*; 
+import java.util.*; 
 import generic.*;
 import processor.*;
 import configuration.Configuration;
@@ -121,6 +123,7 @@ public class Cache implements Element {
 
     @Override
 	public void handleEvent(Event e) {
+
         if(e.getEventType() == Event.EventType.MemoryRead){
             System.out.println("handle event cache memory read");
             MemoryReadEvent ee = (MemoryReadEvent) e;
